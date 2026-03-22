@@ -190,6 +190,36 @@ html.light .tgl::after{left:21px}
 .pin-btn{width:72px;height:52px;border-radius:12px;border:1px solid var(--brd);background:var(--bg2);color:var(--tx);font-size:22px;font-weight:600;font-family:var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
 .pin-btn:active{background:var(--acc);color:#fff;border-color:var(--acc)}
 .pin-btn.del{font-size:14px;font-weight:500;color:var(--tx2)}
+
+/* Phrases overlay */
+.ph-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:flex-end;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:0}
+.ph-overlay.open{display:flex}
+.ph-panel{width:100%;max-width:480px;height:85vh;background:var(--bg2);border-radius:20px 20px 0 0;overflow:hidden;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+.ph-hdr{padding:16px 18px;background:#4f46e5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ph-title{font-size:16px;font-weight:700;color:#fff}
+.ph-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
+#phrase-content{display:flex;flex-direction:column;height:100%;min-height:0}
+.ph-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ph-list{overflow-y:auto;flex:1;padding:4px 0;-webkit-overflow-scrolling:touch;min-height:0}
+.ph-item{padding:14px 18px;border-bottom:1px solid var(--brd)}
+.ph-item:last-child{border:none}
+.ph-it{font-size:13px;color:var(--tx3)}
+.ph-en{font-size:16px;font-weight:500;color:var(--tx);margin-top:4px;line-height:1.4}
+.ph-btns{display:flex;gap:8px;margin-top:8px}
+.ph-btn{padding:5px 12px;border-radius:6px;background:var(--bg3);border:none;color:var(--tx2);font-size:11px;font-weight:500;font-family:var(--f);cursor:pointer;display:flex;align-items:center;gap:4px;transition:.15s}
+.ph-btn:active{background:var(--acc);color:#fff}
+.ph-free{padding:14px 18px;border-top:2px solid var(--brd);flex-shrink:0;background:var(--bg3)}
+.ph-free-label{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.ph-free-row{display:flex;gap:6px}
+.ph-input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--brd);background:var(--card);color:var(--tx);font-size:14px;font-family:var(--f);outline:none}
+.ph-input:focus{border-color:var(--acc)}
+.ph-input::placeholder{color:var(--tx3)}
+.ph-translate-btn{width:42px;height:42px;border-radius:10px;background:#4f46e5;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ph-translate-btn:active{opacity:.7}
+.ph-free-out{margin-top:8px}
+.ph-loading{font-size:13px;color:var(--tx2);padding:8px 0}
+.ph-err{font-size:13px;color:var(--err);padding:8px 0}
+
 </style>
 </head>
 <body>
@@ -228,7 +258,7 @@ var PIN_HASH="";
 var pinCode="";
 var PIN_LEN=6;
 function hashPin(p){var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h=h&h}return h.toString(36)}
-PIN_HASH=hashPin("202026");
+PIN_HASH=hashPin("000000");
 function initLock(){
   if(sessionStorage.getItem("unlocked")==="1"){document.getElementById("lockScreen").classList.add("hide");return}
   document.querySelector(".shell").style.display="none";
@@ -276,6 +306,8 @@ var ICN = {
   water: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#0ea5e9"/><path d="M11 4.5S6.5 9.5 6.5 12.5a4.5 4.5 0 009 0c0-3-4.5-8-4.5-8z" fill="#fff"/><path d="M9.5 13.5a1.5 2 0 003 0" stroke="#0ea5e9" stroke-width="1" stroke-linecap="round"/></svg>',
   skip: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" fill="#ef4444"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
   book: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3b82f6"/><rect x="6" y="5" width="10" height="12" rx="1.5" fill="#fff"/><path d="M8.5 8h5M8.5 10.5h5M8.5 13h3" stroke="#3b82f6" stroke-width="1.2" stroke-linecap="round"/></svg>'
+,
+  phrases: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#4f46e5"/><path d="M4 7h5M6.5 5v2M5 9c1 2 3 3 5 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M13 9l2 6 2-6M14 13h2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 
 if(localStorage.getItem('th')==='l')document.documentElement.classList.add('light');
@@ -406,6 +438,239 @@ var DAYS=[
 
 var cD=0,tsX=0,sf=null,gpsMap=null,dayMarkers=[],gpsMarker=null;
 
+
+// Contextual phrases by stop type + specific overrides
+var PHRASES_TYPE = {
+  "Trasporto": [
+    {it:"Scusi, come arrivo a...?",en:"Excuse me, how do I get to...?"},
+    {it:"Devo cambiare linea?",en:"Do I need to change lines?"},
+    {it:"Qual e' la prossima fermata?",en:"What's the next stop?"},
+    {it:"A che ora parte il prossimo treno?",en:"What time is the next train?"},
+    {it:"Posso pagare con carta contactless?",en:"Can I pay by contactless?"}
+  ],
+  "Hotel": [
+    {it:"Ho una prenotazione a nome...",en:"I have a booking under the name..."},
+    {it:"A che ora e' il checkout?",en:"What time is checkout?"},
+    {it:"Posso lasciare i bagagli dopo il checkout?",en:"Can I leave my luggage after checkout?"},
+    {it:"La colazione e' inclusa?",en:"Is breakfast included?"},
+    {it:"Potrebbe chiamarmi un taxi?",en:"Could you call me a taxi?"}
+  ],
+  "Pub/Birra": [
+    {it:"Una pinta della vostra migliore, per favore",en:"A pint of your best, please"},
+    {it:"Due pinte per favore",en:"Two pints, please"},
+    {it:"Servite anche da mangiare?",en:"Do you serve food?"},
+    {it:"Dov'e' il bagno?",en:"Where are the toilets?"},
+    {it:"Il conto, per favore",en:"The bill, please"},
+    {it:"Avete birre alla spina locali?",en:"Do you have local draught beers?"}
+  ],
+  "Cibo": [
+    {it:"Un tavolo per due, per favore",en:"A table for two, please"},
+    {it:"Posso vedere il menu?",en:"Can I see the menu, please?"},
+    {it:"Cosa mi consiglia?",en:"What do you recommend?"},
+    {it:"Il conto, per favore",en:"The bill, please"},
+    {it:"Posso pagare con carta?",en:"Can I pay by card?"},
+    {it:"Senza glutine, per favore",en:"Gluten-free, please"}
+  ],
+  "Mercato": [
+    {it:"Quanto costa questo?",en:"How much is this?"},
+    {it:"Posso assaggiare?",en:"Can I try some?"},
+    {it:"Accettate solo contanti?",en:"Do you only accept cash?"},
+    {it:"Me ne da' due, per favore",en:"Can I have two, please?"},
+    {it:"Avete qualcosa di vegano?",en:"Do you have anything vegan?"}
+  ],
+  "Attrazione": [
+    {it:"Due biglietti, per favore",en:"Two tickets, please"},
+    {it:"C'e' uno sconto per prenotazioni online?",en:"Is there a discount for online bookings?"},
+    {it:"Si possono fare foto?",en:"Are photos allowed?"},
+    {it:"Dove posso lasciare le borse?",en:"Where can I leave my bags?"},
+    {it:"A che ora chiude?",en:"What time do you close?"}
+  ],
+  "Passeggiata": [
+    {it:"Scusi, sa dove si trova...?",en:"Excuse me, do you know where... is?"},
+    {it:"E' lontano a piedi?",en:"Is it far to walk?"},
+    {it:"Puo' indicarmi la direzione per...?",en:"Can you point me towards...?"}
+  ],
+  "Panorama": [
+    {it:"Si possono fare foto?",en:"Are photos allowed?"},
+    {it:"C'e' un guardaroba?",en:"Is there a cloakroom?"},
+    {it:"Dov'e' l'ascensore?",en:"Where is the lift?"}
+  ],
+  "Foto": [
+    {it:"Puo' farci una foto, per favore?",en:"Could you take our photo, please?"},
+    {it:"Scusi, sa cos'e' questo monumento?",en:"Excuse me, do you know what this monument is?"}
+  ],
+  "Shopping": [
+    {it:"Quanto costa?",en:"How much is this?"},
+    {it:"Posso pagare con carta?",en:"Can I pay by card?"},
+    {it:"Avete una taglia piu' grande/piccola?",en:"Do you have a bigger/smaller size?"}
+  ]
+};
+
+// Specific overrides for certain stops
+var PHRASES_STOP = {
+  "Stansted Airport": [
+    {it:"Dov'e' lo Stansted Express?",en:"Where is the Stansted Express?"},
+    {it:"Quanto costa il biglietto per Liverpool Street?",en:"How much is a ticket to Liverpool Street?"},
+    {it:"Posso pagare con carta contactless?",en:"Can I pay by contactless?"},
+    {it:"A che ora parte il prossimo treno?",en:"What time is the next train?"},
+    {it:"Dov'e' l'uscita per i treni?",en:"Where is the exit for the trains?"},
+    {it:"Quanto dura il viaggio?",en:"How long is the journey?"}
+  ],
+  "Hotel Point A": [
+    {it:"Ho una prenotazione a nome...",en:"I have a reservation under the name..."},
+    {it:"La camera ha una finestra?",en:"Does the room have a window?"},
+    {it:"Posso lasciare i bagagli dopo il checkout?",en:"Can I store my luggage after checkout?"},
+    {it:"C'e' un supermercato qui vicino?",en:"Is there a supermarket nearby?"},
+    {it:"A che ora e' il checkout?",en:"What time is checkout?"},
+    {it:"Il wifi e' gratuito?",en:"Is the wifi free?"}
+  ],
+  "Mikkeller Bar": [
+    {it:"Quali birre avete alla spina oggi?",en:"What do you have on tap today?"},
+    {it:"Mi consiglia qualcosa di leggero?",en:"Can you recommend something light?"},
+    {it:"Fate anche la pizza?",en:"Do you also serve pizza?"},
+    {it:"A che ora chiudete?",en:"What time do you close?"}
+  ],
+  "Borough Market": [
+    {it:"Posso assaggiare prima di comprare?",en:"Can I taste before I buy?"},
+    {it:"Quanto costa una porzione?",en:"How much is a portion?"},
+    {it:"Cosa mi consiglia come street food?",en:"What would you recommend for street food?"},
+    {it:"Accettate carte?",en:"Do you take cards?"},
+    {it:"C'e' un bagno pubblico qui vicino?",en:"Is there a public toilet nearby?"}
+  ],
+  "Tower Bridge Exhibition": [
+    {it:"Ho gia' prenotato online",en:"I already booked online"},
+    {it:"Dove posso lasciare lo zaino?",en:"Where can I leave my backpack?"},
+    {it:"Quanto dura la visita?",en:"How long does the visit take?"},
+    {it:"Si puo' salire sulla passerella di vetro?",en:"Can you walk on the glass walkway?"}
+  ],
+  "Sky Garden": [
+    {it:"Ho una prenotazione per le...",en:"I have a reservation for..."},
+    {it:"Possiamo sederci vicino alla vetrata?",en:"Can we sit near the window?"},
+    {it:"Un cocktail per il compleanno della mia ragazza!",en:"A cocktail for my girlfriend's birthday!"},
+    {it:"A che ora e' il tramonto oggi?",en:"What time is sunset today?"}
+  ],
+  "SMOKESTAK": [
+    {it:"Ho una prenotazione a nome...",en:"I have a reservation under the name..."},
+    {it:"Qual e' il vostro piatto forte?",en:"What's your signature dish?"},
+    {it:"Vorremmo il brisket per favore",en:"We'd like the brisket, please"},
+    {it:"E' possibile avere un tavolo fuori?",en:"Is it possible to have a table outside?"},
+    {it:"Il conto, per favore",en:"The bill, please"}
+  ],
+  "Guinness Open Gate": [
+    {it:"Ho una prenotazione",en:"I have a reservation"},
+    {it:"Come funziona il tour?",en:"How does the tour work?"},
+    {it:"Quali birre producete qui?",en:"What beers do you brew here?"},
+    {it:"Dov'e' il cortile esterno?",en:"Where is the outdoor courtyard?"}
+  ],
+  "Cambio della Guardia": [
+    {it:"A che ora inizia la cerimonia?",en:"What time does the ceremony start?"},
+    {it:"Da dove si vede meglio?",en:"Where's the best spot to watch?"},
+    {it:"Quanto dura?",en:"How long does it last?"}
+  ],
+  "Rock & Sole Plaice": [
+    {it:"Fish and chips per due, per favore",en:"Fish and chips for two, please"},
+    {it:"Che tipo di pesce avete oggi?",en:"What fish do you have today?"},
+    {it:"Con pure' di piselli, per favore",en:"With mushy peas, please"}
+  ],
+  "Portobello Road Market": [
+    {it:"Posso avere un prezzo migliore?",en:"Can I get a better price?"},
+    {it:"E' un pezzo originale o una riproduzione?",en:"Is this an original or a reproduction?"},
+    {it:"Avete qualcosa di vintage anni '60?",en:"Do you have anything vintage from the '60s?"}
+  ],
+  "Camden Market e Stables": [
+    {it:"Qual e' il vostro piatto piu' venduto?",en:"What's your best seller?"},
+    {it:"E' piccante?",en:"Is it spicy?"},
+    {it:"Posso avere meno salsa?",en:"Can I have less sauce?"}
+  ]
+};
+
+function getPhrasesFor(stopName, stopType) {
+  if (PHRASES_STOP[stopName]) return PHRASES_STOP[stopName];
+  if (PHRASES_TYPE[stopType]) return PHRASES_TYPE[stopType];
+  return PHRASES_TYPE["Attrazione"] || [];
+}
+
+
+function showPhrasesIdx(dayIdx, stopIdx) {
+  var all = allItems(DAYS[dayIdx]);
+  if (stopIdx < all.length) {
+    var s = all[stopIdx];
+    showPhrases(s.n, s.tp);
+  }
+}
+
+function showPhrases(stopName, stopType) {
+  var phrases = getPhrasesFor(stopName, stopType);
+  var overlay = document.getElementById("phrase-overlay");
+  var content = document.getElementById("phrase-content");
+  
+  var h = '<div class="ph-hdr"><div><div class="ph-title">' + stopName + '</div><div class="ph-sub">Frasi utili</div></div><button class="ph-close" onclick="closePhrases()">\u2715</button></div>';
+  h += '<div class="ph-list">';
+  phrases.forEach(function(p, i) {
+    h += '<div class="ph-item"><div class="ph-it">' + p.it + '</div><div class="ph-en">' + p.en + '</div>';
+    h += '<div class="ph-btns"><button class="ph-btn" onclick="event.stopPropagation();speakEn(\'' + p.en.replace(/'/g, "\\'") + '\')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 5h2l4-3v12l-4-3H3a1 1 0 01-1-1V6a1 1 0 011-1z" fill="currentColor"/><path d="M11 5.5c.8.8 1.2 1.9 1.2 3s-.4 2.2-1.2 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Ascolta</button>';
+    h += '<button class="ph-btn" onclick="event.stopPropagation();copyText(\'' + p.en.replace(/'/g, "\\'") + '\',this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="6" y="5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/></svg> Copia</button></div></div>';
+  });
+  h += '</div>';
+  
+  h += '<div class="ph-free"><div class="ph-free-label">Scrivi una frase in italiano</div>';
+  h += '<div class="ph-free-row"><input type="text" class="ph-input" id="phFreeIn" placeholder="Es: Dov\'e\' la fermata..." onkeydown="if(event.key===\'Enter\')translateFree()"><button class="ph-translate-btn" onclick="translateFree()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h5M4.5 2v2M3 6c1 2 3 3 5 3" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/><path d="M9 7l2 6 2-6M10 11h2" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
+  h += '<div id="phFreeOut" class="ph-free-out"></div></div>';
+  
+  content.innerHTML = h;
+  overlay.classList.add("open");
+}
+
+function closePhrases() {
+  document.getElementById("phrase-overlay").classList.remove("open");
+}
+
+function speakEn(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-GB";
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function copyText(text, btn) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+  var orig = btn.innerHTML;
+  btn.innerHTML = "\u2713 Copiato!";
+  setTimeout(function() { btn.innerHTML = orig; }, 1500);
+}
+
+function translateFree() {
+  var inp = document.getElementById("phFreeIn").value.trim();
+  if (!inp) return;
+  var out = document.getElementById("phFreeOut");
+  out.innerHTML = '<div class="ph-loading">\u23f3 Traduco...</div>';
+  
+  var url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(inp) + "&langpair=it|en";
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.responseData && d.responseData.translatedText) {
+        var tr = d.responseData.translatedText;
+        out.innerHTML = '<div class="ph-item"><div class="ph-it">' + inp + '</div><div class="ph-en">' + tr + '</div><div class="ph-btns"><button class="ph-btn" onclick="event.stopPropagation();speakEn(\'' + tr.replace(/'/g, "\\'") + '\')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 5h2l4-3v12l-4-3H3a1 1 0 01-1-1V6a1 1 0 011-1z" fill="currentColor"/><path d="M11 5.5c.8.8 1.2 1.9 1.2 3s-.4 2.2-1.2 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Ascolta</button><button class="ph-btn" onclick="event.stopPropagation();copyText(\'' + tr.replace(/'/g, "\\'") + '\',this)"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="6" y="5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/></svg> Copia</button></div></div>';
+      } else {
+        out.innerHTML = '<div class="ph-err">\u274c Traduzione non disponibile</div>';
+      }
+    })
+    .catch(function() {
+      out.innerHTML = '<div class="ph-err">\u274c Errore di connessione</div>';
+    });
+}
 
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
@@ -540,6 +805,7 @@ function renderDay(i){
       h+='<div class="sdlk">';
       if(cmLink)h+='<a class="btn-ico" href="'+cmLink+'" target="_blank" title="Citymapper">'+ICN.citymapper+'</a>';
       if(s.la)h+='<a class="btn-ico" href="https://www.google.com/maps/dir/?api=1&destination='+s.la+','+s.ln+'&travelmode=walking" target="_blank" title="Google Maps">'+ICN.gmaps+'</a>';
+      h+='<a class="btn-ico" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showPhrasesIdx('+i+','+gi+')" title="Frasi utili">'+ICN.phrases+'</a>';
       if(s.bk)h+='<a class="btn-book" href="'+s.bk.u+'" target="_blank">'+ICN.book+' '+s.bk.l+'</a>';
       if(s.la){h+='<a class="btn-ico" href="https://www.google.com/maps/search/toilet+near+'+s.la+','+s.ln+'" target="_blank" title="Bagno">'+ICN.wc+'</a>';
       h+='<a class="btn-ico" href="https://www.google.com/maps/search/drinking+fountain+near+'+s.la+','+s.ln+'" target="_blank" title="Fontanella">'+ICN.water+'</a>'}
@@ -641,11 +907,12 @@ function fetchW(){
 }
 
 function renderIf(){
-  document.getElementById("ifw").innerHTML='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div><div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div><div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div><div class="foot">Albe + Ale \u2022 26-31 Mar 2026 \u2022 London App - Mar 2026 \u{1F408}\u200d\u2b1b</div>';
+  document.getElementById("ifw").innerHTML='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div><div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div><div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div><div class="foot">London App - Mar 2026 \u{1F408}\u200d\u2b1b</div>';
 }
 
 init();
 
 </script>
+<div class="ph-overlay" id="phrase-overlay" onclick="if(event.target===this)closePhrases()"><div class="ph-panel"><div id="phrase-content"></div></div></div>
 </body>
 </html>
