@@ -631,26 +631,43 @@ function showDiary(dayIdx, stopIdx){
   overlay.classList.add("open");
 }
 
+function compressPhoto(file, callback){
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement("canvas");
+      var maxW=800,maxH=600;
+      var w=img.width,h=img.height;
+      if(w>maxW){h=h*(maxW/w);w=maxW}
+      if(h>maxH){w=w*(maxH/h);h=maxH}
+      canvas.width=w;canvas.height=h;
+      var ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+      var compressed=canvas.toDataURL("image/jpeg",0.5);
+      callback(compressed);
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 function previewDiaryGallery(){
   var f=document.getElementById("diary-gallery").files[0];
   if(!f)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    document.getElementById("diary-preview").innerHTML='<img src="'+e.target.result+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">';
-    document.getElementById("diary-preview").dataset.photo=e.target.result;
-  };
-  reader.readAsDataURL(f);
+  compressPhoto(f,function(data){
+    document.getElementById("diary-preview").innerHTML='<img src="'+data+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">';
+    document.getElementById("diary-preview").dataset.photo=data;
+  });
 }
 
 function previewDiaryPhoto(){
   var f=document.getElementById("diary-photo").files[0];
   if(!f)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    document.getElementById("diary-preview").innerHTML='<img src="'+e.target.result+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">';
-    document.getElementById("diary-preview").dataset.photo=e.target.result;
-  };
-  reader.readAsDataURL(f);
+  compressPhoto(f,function(data){
+    document.getElementById("diary-preview").innerHTML='<img src="'+data+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">';
+    document.getElementById("diary-preview").dataset.photo=data;
+  });
 }
 
 function saveDiaryEntry(dayIdx, stopIdx){
