@@ -220,6 +220,72 @@ html.light .tgl::after{left:21px}
 .ph-loading{font-size:13px;color:var(--tx2);padding:8px 0}
 .ph-err{font-size:13px;color:var(--err);padding:8px 0}
 
+
+/* Edit overlay */
+.ed-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:flex-end;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.ed-overlay.open{display:flex}
+.ed-panel{width:100%;max-width:480px;height:90vh;background:var(--bg2);border-radius:20px 20px 0 0;overflow:hidden;display:flex;flex-direction:column}
+#edit-content{display:flex;flex-direction:column;height:100%;min-height:0}
+.ed-hdr{padding:16px 18px;background:var(--acc);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ed-title{font-size:16px;font-weight:700;color:#fff}
+.ed-form{overflow-y:auto;flex:1;padding:14px 18px;-webkit-overflow-scrolling:touch}
+.ed-label{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;display:block;margin:12px 0 4px}
+.ed-label:first-child{margin-top:0}
+.ed-input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--brd);background:var(--card);color:var(--tx);font-size:14px;font-family:var(--f);outline:none}
+.ed-input:focus{border-color:var(--acc)}
+.ed-ta{min-height:60px;resize:vertical}
+.ed-row{display:flex;gap:10px}
+.ed-half{flex:1}
+.ed-actions{margin-top:16px;display:flex;gap:10px}
+.ed-save{flex:1;padding:12px;border-radius:10px;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:600;font-family:var(--f);cursor:pointer}
+.ed-save:active{opacity:.7}
+.ed-del{padding:12px 16px;border-radius:10px;background:var(--err);color:#fff;border:none;font-size:14px;font-weight:600;font-family:var(--f);cursor:pointer}
+.ed-del:active{opacity:.7}
+.ed-move{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--brd)}
+.ed-move-btn{flex:1;padding:10px;border-radius:8px;border:1px solid var(--brd);background:var(--bg3);color:var(--tx2);font-size:13px;font-weight:500;font-family:var(--f);cursor:pointer}
+.ed-move-btn:active{border-color:var(--acc);color:var(--acc)}
+.add-stop-btn{margin:8px 0;padding:10px;border-radius:10px;border:1px dashed var(--brd);background:transparent;color:var(--tx3);font-size:13px;font-weight:500;font-family:var(--f);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%}
+.add-stop-btn:active{border-color:var(--acc);color:var(--acc)}
+
+
+.ed-pen{display:inline-flex;vertical-align:middle;margin-left:4px;opacity:.3;transition:.15s}
+.ed-pen:active{opacity:1}
+.ed-pen svg{width:16px;height:16px}
+.day-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.day-pick-btn{padding:12px 8px;border-radius:10px;border:1px solid var(--brd);background:var(--card);color:var(--tx);font-size:14px;font-weight:600;font-family:var(--f);cursor:pointer;text-align:center;transition:.15s}
+.day-pick-btn:active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.nom-hdr{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:12px 0 6px}
+.nom-sr{border-left:3px solid var(--acc)}
+
+
+.nom-add{font-size:12px;font-weight:600;color:var(--acc);background:var(--accs);padding:6px 12px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--tx);color:var(--bg);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;font-family:var(--f);z-index:9999;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+
+.add-between{display:flex;justify-content:center;padding:4px 0}
+.add-circle{width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.3;transition:.15s}
+.add-circle:active{opacity:.7}
+.add-circle svg{width:20px;height:20px}
+
+
+
+
+
+
+
+
+.zk-wrap{display:flex;gap:6px}
+.zk-content{flex:1;min-width:0}
+.zk-actions{display:flex;flex-direction:column;gap:4px;padding-top:2px;flex-shrink:0}
+.zk-act-btn{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;opacity:1;transition:.15s;cursor:pointer}
+.zk-act-btn:active{opacity:1}
+.zk-act-btn svg{width:16px;height:16px}
+.zk-skip-btn.on{opacity:.6}
+.zk-del-btn:active{opacity:1}
+
 </style>
 </head>
 <body>
@@ -239,7 +305,7 @@ html.light .tgl::after{left:21px}
 <div class="gps-wrap"><div id="gmap"></div><button class="gps-btn" onclick="doLocate()">📍 Tu sei qui</button></div>
 <div id="dc"></div>
 </div>
-<div class="pg" id="p2"><div class="srw"><div class="srbox"><span class="sri">🔍</span><input class="srin" type="text" id="si" placeholder="Cerca luogo, pub, metro..."></div><div class="scps" id="scp"></div><div id="srs"></div></div></div>
+<div class="pg" id="p2"><div class="srw"><div class="srbox"><span class="sri">🔍</span><input class="srin" type="text" id="si" placeholder="Cerca luogo, pub, metro..."></div><div class="scps" id="scp"></div><div id="srs"></div><div id="nom-results"></div></div></div>
 <div class="pg" id="p3"><div class="iw" id="trw"></div></div>
 <div class="pg" id="p4"><div class="iw" id="mtw"></div></div>
 <div class="pg" id="p5"><div class="iw" id="ifw"></div></div>
@@ -307,6 +373,10 @@ var ICN = {
   skip: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" fill="#ef4444"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
   book: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3b82f6"/><rect x="6" y="5" width="10" height="12" rx="1.5" fill="#fff"/><path d="M8.5 8h5M8.5 10.5h5M8.5 13h3" stroke="#3b82f6" stroke-width="1.2" stroke-linecap="round"/></svg>'
 ,
+  skip_stop: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#6b7280"/><path d="M5 11h12M9 7l-4 4 4 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  delete_stop: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#ef4444"/><path d="M7 8h8l-.8 8.5a1 1 0 01-1 .9h-4.4a1 1 0 01-1-.9L7 8z" fill="#fff"/><rect x="6" y="6" width="10" height="2" rx=".5" fill="#fff"/><rect x="9" y="4.5" width="4" height="2" rx=".5" fill="#fff"/></svg>',
+  add_here: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"/><path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  edit: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#6b7280"/><path d="M13.5 5.5l3 3M6 13l-1 4 4-1 8.5-8.5-3-3L6 13z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   phrases: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#4f46e5"/><path d="M4 7h5M6.5 5v2M5 9c1 2 3 3 5 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M13 9l2 6 2-6M14 13h2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 
@@ -592,7 +662,7 @@ function getPhrasesFor(stopName, stopType) {
 
 
 function showPhrasesIdx(dayIdx, stopIdx) {
-  var all = allItems(DAYS[dayIdx]);
+  var all = allItems(LIVE_DAYS[dayIdx]);
   if (stopIdx < all.length) {
     var s = all[stopIdx];
     showPhrases(s.n, s.tp);
@@ -672,6 +742,434 @@ function translateFree() {
     });
 }
 
+// === EDIT ITINERARY FEATURE ===
+
+// On first load, store DAYS in localStorage. After that, always read from storage.
+function loadDays() {
+  var stored = localStorage.getItem("ld-days");
+  if (stored) {
+    try { return JSON.parse(stored); } catch(e) {}
+  }
+  saveDays(DAYS);
+  return JSON.parse(JSON.stringify(DAYS));
+}
+function saveDays(d) {
+  localStorage.setItem("ld-days", JSON.stringify(d));
+}
+function confirmReset() {
+  if (confirm("Ripristinare l'itinerario originale?")) resetDays();
+}
+function resetDays() {
+  localStorage.removeItem("ld-days");
+  LIVE_DAYS = JSON.parse(JSON.stringify(DAYS));
+  saveDays(LIVE_DAYS);
+  renderDay(cD);
+}
+
+var LIVE_DAYS = loadDays();
+
+var APP_VERSION = "7.1";
+function checkVersion() {
+  var stored = localStorage.getItem("ld-version");
+  if (stored !== APP_VERSION) {
+    localStorage.removeItem("ld-days");
+    localStorage.setItem("ld-version", APP_VERSION);
+    LIVE_DAYS = JSON.parse(JSON.stringify(DAYS));
+    saveDays(LIVE_DAYS);
+  }
+}
+
+
+// Types for dropdown
+var STOP_TYPES = ["Pub/Birra","Cibo","Attrazione","Mercato","Trasporto","Hotel","Foto","Shopping"];
+
+function showEditStop(dayIdx, stopIdx) {
+  var all = allItemsLive(LIVE_DAYS[dayIdx]);
+  var s = all.items[stopIdx];
+  var isNew = !s;
+  if (isNew) {
+    s = {t:"12:00",n:"",tp:"Attrazione",ds:"",du:"",la:0,ln:0,ad:"",di:"",ws:[],bk:null,pla:null,pln:null};
+  }
+
+  var overlay = document.getElementById("edit-overlay");
+  var content = document.getElementById("edit-content");
+
+  var typeOpts = STOP_TYPES.map(function(tp) {
+    return '<option value="' + tp + '"' + (tp === s.tp ? ' selected' : '') + '>' + tp + '</option>';
+  }).join("");
+
+  var h = '<div class="ed-hdr"><div class="ed-title">' + (isNew ? "Nuova tappa" : "Modifica tappa") + '</div><button class="ph-close" onclick="closeEdit()">\u2715</button></div>';
+  h += '<div class="ed-form">';
+  h += '<label class="ed-label">Nome</label><input class="ed-input" id="ed-name" value="' + (s.n||"").replace(/"/g,"&quot;") + '" placeholder="Nome della tappa">';
+  h += '<div class="ed-row"><div class="ed-half"><label class="ed-label">Orario</label><input class="ed-input" id="ed-time" type="time" value="' + (s.t||"12:00") + '"></div>';
+  h += '<div class="ed-half"><label class="ed-label">Durata</label><input class="ed-input" id="ed-dur" value="' + (s.du||"") + '" placeholder="~30 min"></div></div>';
+  h += '<label class="ed-label">Tipo</label><select class="ed-input" id="ed-type">' + typeOpts + '</select>';
+  h += '<label class="ed-label">Descrizione</label><textarea class="ed-input ed-ta" id="ed-desc" placeholder="Descrizione...">' + (s.ds||"") + '</textarea>';
+  h += '<label class="ed-label">Indirizzo</label><input class="ed-input" id="ed-addr" value="' + (s.ad||"").replace(/"/g,"&quot;") + '" placeholder="Indirizzo">';
+  h += '<label class="ed-label">Come arrivarci</label><input class="ed-input" id="ed-dir" value="' + (s.di||"").replace(/"/g,"&quot;") + '" placeholder="Indicazioni">';
+  h += '<div class="ed-row"><div class="ed-half"><label class="ed-label">Lat</label><input class="ed-input" id="ed-lat" type="number" step="any" value="' + (s.la||0) + '"></div>';
+  h += '<div class="ed-half"><label class="ed-label">Lng</label><input class="ed-input" id="ed-lng" type="number" step="any" value="' + (s.ln||0) + '"></div></div>';
+  h += '<label class="ed-label">Link prenotazione (opzionale)</label><input class="ed-input" id="ed-bk" value="' + (s.bk?s.bk.u:"") + '" placeholder="https://...">';
+  
+  h += '<div class="ed-actions">';
+  h += '<button class="ed-save" onclick="saveEdit(' + dayIdx + ',' + stopIdx + ',' + (isNew?1:0) + ')">Salva</button>';
+  if (!isNew) {
+    h += '<button class="ed-del" onclick="deleteStop(' + dayIdx + ',' + stopIdx + ')">Elimina tappa</button>';
+  }
+  h += '</div>';
+  
+  if (!isNew) {
+    h += '<div class="ed-move">';
+    if (stopIdx > 0) h += '<button class="ed-move-btn" onclick="moveStop(' + dayIdx + ',' + stopIdx + ',-1)">\u2191 Sposta su</button>';
+    if (stopIdx < all.items.length - 1) h += '<button class="ed-move-btn" onclick="moveStop(' + dayIdx + ',' + stopIdx + ',1)">\u2193 Sposta giu</button>';
+    h += '</div>';
+  }
+  
+  h += '</div>';
+  
+  content.innerHTML = h;
+  overlay.classList.add("open");
+}
+
+function closeEdit() {
+  document.getElementById("edit-overlay").classList.remove("open");
+}
+
+function saveEdit(dayIdx, stopIdx, isNew) {
+  var s = {
+    t: document.getElementById("ed-time").value || "12:00",
+    n: document.getElementById("ed-name").value || "Nuova tappa",
+    tp: document.getElementById("ed-type").value,
+    ds: document.getElementById("ed-desc").value || "",
+    du: document.getElementById("ed-dur").value || "",
+    la: parseFloat(document.getElementById("ed-lat").value) || 0,
+    ln: parseFloat(document.getElementById("ed-lng").value) || 0,
+    ad: document.getElementById("ed-addr").value || "",
+    di: document.getElementById("ed-dir").value || "",
+    ws: [],
+    bk: null,
+    pla: null,
+    pln: null
+  };
+  
+  var bkUrl = document.getElementById("ed-bk").value;
+  if (bkUrl) s.bk = {u: bkUrl, l: "Prenota"};
+  
+  // Find which zone and position this stop is in
+  var info = findStopInZones(dayIdx, stopIdx);
+  
+  if (isNew) {
+    // Add to last zone of the day
+    var lastZone = LIVE_DAYS[dayIdx].zones[LIVE_DAYS[dayIdx].zones.length - 1];
+    lastZone.items.push(s);
+  } else {
+    LIVE_DAYS[dayIdx].zones[info.zoneIdx].items[info.itemIdx] = s;
+  }
+  
+  saveDays(LIVE_DAYS);
+  closeEdit();
+  renderDay(cD);
+}
+
+function deleteStop(dayIdx, stopIdx) {
+  var info = findStopInZones(dayIdx, stopIdx);
+  LIVE_DAYS[dayIdx].zones[info.zoneIdx].items.splice(info.itemIdx, 1);
+  // Remove empty zones
+  LIVE_DAYS[dayIdx].zones = LIVE_DAYS[dayIdx].zones.filter(function(z) { return z.items.length > 0; });
+  saveDays(LIVE_DAYS);
+  closeEdit();
+  renderDay(cD);
+}
+
+function moveStop(dayIdx, stopIdx, direction) {
+  var all = allItemsLive(LIVE_DAYS[dayIdx]).items;
+  if (stopIdx + direction < 0 || stopIdx + direction >= all.length) return;
+  
+  var infoFrom = findStopInZones(dayIdx, stopIdx);
+  var infoTo = findStopInZones(dayIdx, stopIdx + direction);
+  
+  // Swap in the flat list approach: remove from source, insert at target
+  var item = LIVE_DAYS[dayIdx].zones[infoFrom.zoneIdx].items.splice(infoFrom.itemIdx, 1)[0];
+  LIVE_DAYS[dayIdx].zones[infoTo.zoneIdx].items.splice(infoTo.itemIdx + (direction > 0 ? 1 : 0), 0, item);
+  
+  // Clean empty zones
+  LIVE_DAYS[dayIdx].zones = LIVE_DAYS[dayIdx].zones.filter(function(z) { return z.items.length > 0; });
+  
+  saveDays(LIVE_DAYS);
+  closeEdit();
+  renderDay(cD);
+}
+
+// Helper: given a flat stopIdx, find zoneIdx and itemIdx within that zone
+function findStopInZones(dayIdx, flatIdx) {
+  var count = 0;
+  for (var zi = 0; zi < LIVE_DAYS[dayIdx].zones.length; zi++) {
+    var zone = LIVE_DAYS[dayIdx].zones[zi];
+    for (var ii = 0; ii < zone.items.length; ii++) {
+      if (count === flatIdx) return {zoneIdx: zi, itemIdx: ii};
+      count++;
+    }
+  }
+  return {zoneIdx: 0, itemIdx: 0};
+}
+
+// Helper: get all items from LIVE_DAYS
+function allItemsLive(d) {
+  var a = [];
+  d.zones.forEach(function(z) { z.items.forEach(function(s) { a.push(s); }); });
+  return {items: a};
+}
+
+// === NOMINATIM SEARCH + ADD TO ITINERARY ===
+var NOM_CACHE = {};
+var TYPE_MAP = {
+  pub:"Pub/Birra",bar:"Pub/Birra",biergarten:"Pub/Birra",brewery:"Pub/Birra",
+  restaurant:"Cibo",fast_food:"Cibo",cafe:"Cibo",food_court:"Cibo",ice_cream:"Cibo",bakery:"Cibo",
+  museum:"Attrazione",tourism:"Attrazione",attraction:"Attrazione",castle:"Attrazione",monument:"Attrazione",memorial:"Attrazione",artwork:"Attrazione",gallery:"Attrazione",theatre:"Attrazione",cinema:"Attrazione",church:"Attrazione",cathedral:"Attrazione",
+  marketplace:"Mercato",market:"Mercato",
+  station:"Trasporto",bus_station:"Trasporto",subway:"Trasporto",
+  hotel:"Hotel",hostel:"Hotel",guest_house:"Hotel",
+  viewpoint:"Attrazione",
+  shop:"Shopping",supermarket:"Shopping",clothes:"Shopping",books:"Shopping"
+};
+
+function detectType(place){
+  var t=(place.type||"").toLowerCase();
+  var c=(place["class"]||"").toLowerCase();
+  if(TYPE_MAP[t])return TYPE_MAP[t];
+  if(TYPE_MAP[c])return TYPE_MAP[c];
+  var dn=(place.display_name||"").toLowerCase();
+  if(dn.indexOf("pub")>=0||dn.indexOf("brewery")>=0||dn.indexOf("tavern")>=0)return "Pub/Birra";
+  if(dn.indexOf("restaurant")>=0||dn.indexOf("cafe")>=0||dn.indexOf("pizz")>=0)return "Cibo";
+  if(dn.indexOf("museum")>=0||dn.indexOf("gallery")>=0||dn.indexOf("palace")>=0||dn.indexOf("tower")>=0||dn.indexOf("bridge")>=0||dn.indexOf("church")>=0)return "Attrazione";
+  if(dn.indexOf("market")>=0)return "Mercato";
+  if(dn.indexOf("station")>=0)return "Trasporto";
+  if(dn.indexOf("hotel")>=0||dn.indexOf("hostel")>=0)return "Hotel";
+  return "Attrazione";
+}
+
+function searchNominatim(q){
+  if(!q||q.length<3)return;
+  var key=q.toLowerCase();
+  if(NOM_CACHE[key]){renderNomResults(NOM_CACHE[key],q);return}
+  fetch("https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(q+" London UK")+"&limit=5&addressdetails=1",{headers:{"Accept-Language":"it"}})
+  .then(function(r){return r.json()})
+  .then(function(d){NOM_CACHE[key]=d;renderNomResults(d,q)})
+  .catch(function(){});
+}
+
+function renderNomResults(results,q){
+  var c=document.getElementById("nom-results");
+  if(!c)return;
+  if(!results.length){c.innerHTML="";return}
+  var h='<div class="nom-hdr">\ud83c\udf0d Risultati da OpenStreetMap</div>';
+  var seen2={};var unique2=[];
+    results.forEach(function(r){var nm=r.display_name.split(",")[0].trim().toLowerCase();if(!seen2[nm]){seen2[nm]=true;unique2.push(r)}});
+    unique2.forEach(function(r,i){
+    var name=r.display_name.split(",")[0];
+    var addr=r.display_name.split(",").slice(1,3).join(",").trim();
+    var tp=detectType(r);
+    var ti=TI[tp]||"\ud83c\udfdb";
+    h+='<div class="sr nom-sr" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
+    h+='<div class="sr-d">'+ti+" "+tp+'</div><div class="sr-n">'+name+'</div><div class="sr-x">'+addr+'</div></div>';
+  });
+  c.innerHTML=h;
+}
+
+function showAddFlow(resultIdx,q){
+  var key=q.toLowerCase();
+  var results=NOM_CACHE[key];
+  if(!results||!results[resultIdx])return;
+  var place=results[resultIdx];
+  var name=place.display_name.split(",")[0];
+  var addr=place.display_name.split(",").slice(0,3).join(",").trim();
+  var la=parseFloat(place.lat);
+  var ln=parseFloat(place.lon);
+  var tp=detectType(place);
+  
+  var overlay=document.getElementById("edit-overlay");
+  var content=document.getElementById("edit-content");
+  var h='<div class="ed-hdr"><div class="ed-title">Aggiungi tappa</div><button class="ph-close" onclick="closeEdit()">\u2715</button></div>';
+  h+='<div class="ed-form">';
+  h+='<div style="padding:12px;background:var(--bg3);border-radius:10px;margin-bottom:14px"><div style="font-size:15px;font-weight:600">'+name+'</div><div style="font-size:12px;color:var(--tx2);margin-top:4px">'+addr+'</div><div style="font-size:11px;color:var(--tx3);margin-top:4px">Tipo rilevato: '+tp+'</div></div>';
+  h+='<label class="ed-label">In quale giorno?</label><div class="day-pick">';
+  LIVE_DAYS.forEach(function(d,i){
+    h+='<button class="day-pick-btn" onclick="addPlaceToDay('+i+',\''+name.replace(/'/g,"\\'")+'\',\''+tp+'\',\''+addr.replace(/'/g,"\\'")+'\','+la+','+ln+')">';
+    h+=d.pl+'<br><span style="font-size:10px;color:var(--tx3);font-weight:400">'+d.t.substring(0,28)+'</span></button>';
+  });
+  h+='</div></div>';
+  content.innerHTML=h;
+  overlay.classList.add("open");
+}
+
+function addPlaceToDay(dayIdx,name,tp,addr,la,ln){
+  var all=allItems(LIVE_DAYS[dayIdx]);
+  var lastTime="12:00";
+  if(all.length>0){
+    var lt=all[all.length-1].t;var parts=lt.split(":");
+    var hh=parseInt(parts[0]);hh+=1;if(hh>23)hh=23;
+    lastTime=(hh<10?"0":"")+hh+":"+parts[1];
+  }
+  var newStop={t:lastTime,n:name,tp:tp,ds:"",du:"~1h",la:la,ln:ln,ad:addr,di:"",ws:[],bk:null,pla:null,pln:null};
+  var lastZone=LIVE_DAYS[dayIdx].zones[LIVE_DAYS[dayIdx].zones.length-1];
+  lastZone.items.push(newStop);
+  lastZone.items.sort(function(a,b){return a.t.localeCompare(b.t)});
+  saveDays(LIVE_DAYS);
+  closeEdit();
+  selDay(dayIdx);
+  var allNew=allItems(LIVE_DAYS[dayIdx]);
+  var newIdx=-1;
+  allNew.forEach(function(s,idx){if(s.n===name&&s.la===la)newIdx=idx});
+  if(newIdx>=0)setTimeout(function(){showEditStop(dayIdx,newIdx)},300);
+  showToast("\u2705 "+name+" aggiunto a "+LIVE_DAYS[dayIdx].pl);
+}
+
+function showSearchAdd(dayIdx, afterStopIdx) {
+  var overlay = document.getElementById("edit-overlay");
+  var content = document.getElementById("edit-content");
+  var dayName = LIVE_DAYS[dayIdx].pl;
+  var posLabel = typeof afterStopIdx === "number" ? " (dopo posizione " + (afterStopIdx+1) + ")" : "";
+  
+  var h = '<div class="ed-hdr"><div class="ed-title">Aggiungi tappa a ' + dayName + '</div><button class="ph-close" onclick="closeEdit()">\u2715</button></div>';
+  h += '<div class="ed-form">';
+  h += '<label class="ed-label">Cerca un luogo</label>';
+  h += '<div class="ph-free-row"><input type="text" class="ed-input" id="addSearchIn" placeholder="Es: London Eye, Dishoom..."><button class="ph-translate-btn" onclick="doAddSearch(' + dayIdx + ',' + (typeof afterStopIdx==="number"?afterStopIdx:"999") + ')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#fff" stroke-width="2" fill="none"/><path d="M11 11l3 3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button></div>';
+  h += '<div id="addSearchResults" style="margin-top:10px"></div>';
+  h += '</div>';
+  
+  content.innerHTML = h;
+  overlay.classList.add("open");
+  setTimeout(function() {
+    var inp = document.getElementById("addSearchIn");
+    if (inp) {
+      inp.focus();
+      inp.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") doAddSearch(dayIdx, typeof afterStopIdx==="number"?afterStopIdx:999);
+      });
+    }
+  }, 300);
+}
+
+function doAddSearch(dayIdx, afterStopIdx) {
+  var q = document.getElementById("addSearchIn").value.trim();
+  if (!q || q.length < 2) return;
+  var out = document.getElementById("addSearchResults");
+  out.innerHTML = '<div class="emp">\u23f3 Cerco...</div>';
+  
+  fetch("https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(q + " London UK") + "&limit=8&addressdetails=1", {headers:{"Accept-Language":"it"}})
+  .then(function(r) { return r.json(); })
+  .then(function(results) {
+    if (!results.length) { out.innerHTML = '<div class="emp">Nessun risultato</div>'; return; }
+    // Deduplicate by name
+    var seen = {};
+    var unique = [];
+    results.forEach(function(r) {
+      var name = r.display_name.split(",")[0].trim().toLowerCase();
+      if (!seen[name]) {
+        seen[name] = true;
+        unique.push(r);
+      }
+    });
+    
+    var h = "";
+    unique.forEach(function(r, i) {
+      var name = r.display_name.split(",")[0];
+      var addr = r.display_name.split(",").slice(1, 3).join(",").trim();
+      var la = parseFloat(r.lat);
+      var ln = parseFloat(r.lon);
+      var tp = detectType(r);
+      var ti = TI[tp] || "\ud83c\udfdb";
+      var safeName = name.replace(/'/g, "\u2019");
+      var safeAddr = addr.replace(/'/g, "\u2019");
+      h += '<div class="sr nom-sr" onclick="confirmAddPlaceAt(' + dayIdx + ',' + afterStopIdx + ',\'' + safeName + '\',\'' + tp + '\',\'' + safeAddr + '\',' + la + ',' + ln + ')">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:center"><div>';
+      h += '<div class="sr-d">' + ti + ' ' + tp + '</div>';
+      h += '<div class="sr-n">' + name + '</div>';
+      h += '<div class="sr-x">' + addr + '</div>';
+      h += '</div><div class="nom-add">+ Aggiungi</div></div></div>';
+    });
+    out.innerHTML = h;
+  })
+  .catch(function() { out.innerHTML = '<div class="emp">Errore di connessione</div>'; });
+}
+
+function confirmAddPlaceAt(dayIdx, afterStopIdx, name, tp, addr, la, ln) {
+  // Calculate time: if inserting between stops, average their times
+  var all = allItems(LIVE_DAYS[dayIdx]);
+  var newTime = "12:00";
+  
+  if (afterStopIdx < 999 && afterStopIdx >= 0 && afterStopIdx < all.length) {
+    var prevTime = all[afterStopIdx].t;
+    var pp = prevTime.split(":");
+    var ph = parseInt(pp[0]), pm = parseInt(pp[1]);
+    // Check if there's a next stop
+    if (afterStopIdx + 1 < all.length) {
+      var nextTime = all[afterStopIdx + 1].t;
+      var np = nextTime.split(":");
+      var nh = parseInt(np[0]), nm = parseInt(np[1]);
+      // Average
+      var avgMin = Math.round(((ph*60+pm) + (nh*60+nm)) / 2);
+      var ah = Math.floor(avgMin/60);
+      var am = avgMin % 60;
+      newTime = (ah<10?"0":"") + ah + ":" + (am<10?"0":"") + am;
+    } else {
+      // After last stop: +1h
+      ph += 1;
+      if (ph > 23) ph = 23;
+      newTime = (ph<10?"0":"") + ph + ":" + (pm<10?"0":"") + pm;
+    }
+  } else {
+    // At the end: +1h from last
+    if (all.length > 0) {
+      var lt = all[all.length-1].t.split(":");
+      var lh = parseInt(lt[0]) + 1;
+      if (lh > 23) lh = 23;
+      newTime = (lh<10?"0":"") + lh + ":" + lt[1];
+    }
+  }
+  
+  var newStop = {t:newTime,n:name,tp:tp,ds:"",du:"~1h",la:la,ln:ln,ad:addr,di:"",ws:[],bk:null,pla:null,pln:null};
+  
+  // Find the right zone and position to insert
+  if (afterStopIdx < 999 && afterStopIdx >= 0) {
+    var info = findStopInZones(dayIdx, afterStopIdx);
+    LIVE_DAYS[dayIdx].zones[info.zoneIdx].items.splice(info.itemIdx + 1, 0, newStop);
+  } else {
+    var lastZone = LIVE_DAYS[dayIdx].zones[LIVE_DAYS[dayIdx].zones.length - 1];
+    lastZone.items.push(newStop);
+  }
+  
+  saveDays(LIVE_DAYS);
+  closeEdit();
+  selDay(dayIdx);
+  showToast("\u2705 " + name + " aggiunto!");
+}
+
+function deleteStopPermanent(dayIdx, stopIdx) {
+  var all = allItems(LIVE_DAYS[dayIdx]);
+  var name = all[stopIdx] ? all[stopIdx].n : "tappa";
+  if (!confirm("Eliminare definitivamente " + name + "?")) return;
+  var info = findStopInZones(dayIdx, stopIdx);
+  LIVE_DAYS[dayIdx].zones[info.zoneIdx].items.splice(info.itemIdx, 1);
+  LIVE_DAYS[dayIdx].zones = LIVE_DAYS[dayIdx].zones.filter(function(z) { return z.items.length > 0; });
+  saveDays(LIVE_DAYS);
+  renderDay(cD);
+  showToast("\ud83d\uddd1 " + name + " eliminato");
+}
+
+function showToast(msg) {
+  var t = document.getElementById("toast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "toast";
+    t.className = "toast";
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(function() { t.classList.remove("show"); }, 2500);
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -700,7 +1198,9 @@ function doLocate(){
 }
 
 function init(){
-  renderNav();renderPills();renderDay(0);renderSearch();renderTr();renderMt();renderIf();
+  renderNav();renderPills();LIVE_DAYS=loadDays();
+checkVersion();
+renderDay(0);renderSearch();renderTr();renderMt();renderIf();
   document.getElementById("si").addEventListener("input",doSearch);
   var el=document.getElementById("dc");
   el.addEventListener("touchstart",function(e){tsX=e.touches[0].clientX},{passive:true});
@@ -724,7 +1224,7 @@ function renderDayMarkers(){
   if(!gpsMap)return;
   dayMarkers.forEach(function(m){gpsMap.removeLayer(m)});
   dayMarkers=[];
-  var all=allItems(DAYS[cD]).filter(function(s){return s.la&&s.la<52});
+  var all=allItems(LIVE_DAYS[cD]).filter(function(s){return s.la&&s.la<52});
   if(!all.length)return;
   var bounds=[];
   all.forEach(function(s,i){
@@ -740,17 +1240,17 @@ function renderDayMarkers(){
 function renderNav(){document.querySelectorAll(".nav button").forEach(function(b){b.onclick=function(){document.querySelectorAll(".nav button").forEach(function(x){x.classList.remove("on")});document.querySelectorAll(".pg").forEach(function(x){x.classList.remove("on")});b.classList.add("on");document.getElementById(b.dataset.p).classList.add("on");if(b.dataset.p==="p1"&&gpsMap)setTimeout(function(){gpsMap.invalidateSize();renderDayMarkers()},100)}})}
 function renderPills(){var c=document.getElementById("pls");c.innerHTML=DAYS.map(function(d,i){return '<div class="pl'+(i===0?" on":"")+'" data-i="'+i+'">'+d.pl+'</div>'}).join("");c.querySelectorAll(".pl").forEach(function(p){p.onclick=function(){selDay(+p.dataset.i)}})}
 function selDay(i){cD=i;document.querySelectorAll(".pl").forEach(function(x){x.classList.remove("on")});document.querySelector('.pl[data-i="'+i+'"]').classList.add("on");renderDay(i);renderDayMarkers();document.querySelector('.pl[data-i="'+i+'"]').scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"})}
-function allItems(d){var a=[];d.zones.forEach(function(z){z.items.forEach(function(s){a.push(s)})});return a}
+function allItems(d){var a=[];d.zones.forEach(function(z){z.items.forEach(function(s,si){a.push(s)})});return a}
 
 function getZoneColor(z){
-  var types={};z.items.forEach(function(s){var c=TC[s.tp]||"hotel";types[c]=(types[c]||0)+1});
+  var types={};z.items.forEach(function(s,si){var c=TC[s.tp]||"hotel";types[c]=(types[c]||0)+1});
   var max="hotel",maxC=0;for(var k in types)if(types[k]>maxC){max=k;maxC=types[k]}
   return max;
 }
 
 function updateTimers(){
   var now=new Date(),h=now.getHours(),m=now.getMinutes();
-  allItems(DAYS[cD]).forEach(function(s,i){
+  allItems(LIVE_DAYS[cD]).forEach(function(s,i){
     var el=document.getElementById("tmr-"+cD+"-"+i);
     if(!el)return;
     var parts=s.t.split(":"),sh=parseInt(parts[0]),sm=parseInt(parts[1]);
@@ -762,7 +1262,7 @@ function updateTimers(){
 }
 
 function renderDay(i){
-  var d=DAYS[i],all=allItems(d);
+  var d=LIVE_DAYS[i],all=allItems(d);
   var pb=0,fb=0;all.forEach(function(s){if(s.tp==="Pub/Birra")pb++;if(s.tp==="Cibo")fb++});
   var skipped=all.filter(function(_,si){return localStorage.getItem("sk-"+i+"-"+si)==="1"}).length;
   document.getElementById("pbar").style.width=(all.length?Math.round(skipped/all.length*100):0)+"%";
@@ -780,7 +1280,7 @@ function renderDay(i){
     h+='<div class="tl-zone tl-lc-'+nextTp+'"><div class="tl-zone-time">'+firstTime+'</div><div class="tl-zone-dotcol"><div class="tl-zone-dot '+mainTp+'"></div></div><div><div class="zb">';
     if(z.zone)h+='<div class="zb-hdr c-'+mainTp+'">'+z.zone+'</div>';
 
-    z.items.forEach(function(s){
+    z.items.forEach(function(s,si){
       var cl=TC[s.tp]||"hotel";
       var ti=TI[s.tp]||"";
       var tn=TN[s.tp]||s.tp;
@@ -791,13 +1291,17 @@ function renderDay(i){
       if(s.pla&&s.la)cmLink="https://citymapper.com/directions?startcoord="+s.pla+","+s.pln+"&endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n);
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
-      h+='<div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
-      h+='<div class="zk-nm">'+s.n+'</div>';
+      h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
+      h+='<div class="zk-nm">'+s.n+' <a class="ed-pen" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showEditStop('+i+','+gi+')" title="Modifica">'+ICN.edit+'</a></div>';
       h+='<div class="zk-ds">'+s.ds+'</div>';
       if(tgs)h+='<div class="zk-tags">'+tgs+'</div>';
       if(s.du)h+='<div class="zk-du">'+s.du+'</div>';
       h+='<div class="zk-timer" id="tmr-'+i+'-'+gi+'"></div>';
       h+='</div>';
+      h+='<div class="zk-actions">';
+      h+='<a class="zk-act-btn zk-skip-btn'+(isSkip?" on":"")+'" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();toggleSkip('+i+','+gi+')" title="'+(isSkip?'Ripristina':'Salta')+'">'+ICN.skip_stop+'</a>';
+      h+='<a class="zk-act-btn zk-del-btn" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();deleteStopPermanent('+i+','+gi+')" title="Elimina">'+ICN.delete_stop+'</a>';
+      h+='</div></div></div>';
 
       h+='<div class="sd" id="sd-'+i+'-'+gi+'">';
       if(s.di)h+='<div class="sdb"><div class="sdl">\u{1F5FA} Come arrivarci</div><div class="sdtx">'+s.di+'</div></div>';
@@ -809,15 +1313,23 @@ function renderDay(i){
       if(s.bk)h+='<a class="btn-book" href="'+s.bk.u+'" target="_blank">'+ICN.book+' '+s.bk.l+'</a>';
       if(s.la){h+='<a class="btn-ico" href="https://www.google.com/maps/search/toilet+near+'+s.la+','+s.ln+'" target="_blank" title="Bagno">'+ICN.wc+'</a>';
       h+='<a class="btn-ico" href="https://www.google.com/maps/search/drinking+fountain+near+'+s.la+','+s.ln+'" target="_blank" title="Fontanella">'+ICN.water+'</a>'}
-      h+='<button class="btn-ico btn-del'+(isSkip?" skipped":"")+'" onclick="event.stopPropagation();toggleSkip('+i+','+gi+')">'+ICN.skip+'</button>';
+      
       h+='</div>';
+
       h+='<div class="sdb" style="margin-top:8px"><div class="sdl">\u{1F4DD} Note</div><textarea class="sdnt" placeholder="Aggiungi nota..." id="nt-'+i+'-'+gi+'" onclick="event.stopPropagation()" onblur="saveNt('+i+','+gi+')">'+nt+'</textarea></div>';
       h+='</div>';
+      if(si < z.items.length - 1) {
+        h+='<div class="add-between"><a class="add-circle" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showSearchAdd('+i+','+gi+')">'+ICN.add_here+'</a></div>';
+      }
       gi++;
     });
     h+='</div></div></div>';
+    if(zi < d.zones.length - 1) {
+      h+='<div class="tl-zone" style="grid-template-columns:42px 22px 1fr"><div class="tl-zone-time"></div><div class="tl-zone-dotcol" style="padding:4px 0"><div style="width:2px;background:var(--brd);flex:1"></div></div><div class="add-between" style="padding:4px 0"><a class="add-circle" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showSearchAdd('+i+','+(gi-1)+')">'+ICN.add_here+'</a></div></div>';
+    }
   });
   h+='</div>';
+  h+='<div style="padding:0 20px"><button class="add-stop-btn" onclick="showSearchAdd('+i+',allItems(LIVE_DAYS['+i+']).length-1)">+ Cerca e aggiungi tappa</button></div>';
   document.getElementById("dc").innerHTML=h;
   updateTimers();
 }
@@ -838,15 +1350,16 @@ function renderSearch(){
 function doSearch(){
   var q=(document.getElementById("si").value||"").toLowerCase().trim();
   var r=document.getElementById("srs");
-  if(!q&&!sf){r.innerHTML='<div class="emp">Scrivi o seleziona categoria</div>';return}
+  if(!q&&!sf){r.innerHTML='<div class="emp">Cerca un luogo per trovarlo nell\u0027itinerario o per aggiungerne uno nuovo</div>';return}
   var res=[];
-  DAYS.forEach(function(d){allItems(d).forEach(function(s){
+  LIVE_DAYS.forEach(function(d){allItems(d).forEach(function(s){
     var txt=(s.n+" "+s.ds+" "+s.tp+" "+(s.ad||"")).toLowerCase();
     if((!q||txt.indexOf(q)>=0)&&(!sf||s.tp===sf))res.push({d:d,s:s});
   })});
   var h=res.length?res.map(function(x){return '<div class="sr" onclick="goTo('+x.d.id+',\''+x.s.t+'\')"><div class="sr-d">'+x.d.pl+'</div><div class="sr-n">'+x.s.n+'</div><div class="sr-x">'+x.s.ds.substring(0,90)+'</div></div>'}).join(""):'<div class="emp">Nessun risultato</div>';
   if(q&&q.length>2)h+='<div class="sr-gm"><a href="https://www.google.com/maps/search/'+encodeURIComponent(q+" London")+'" target="_blank">'+ICN.gmaps+' Cerca "'+q+'" su Google Maps</a></div>';
   r.innerHTML=h;
+  if(q&&q.length>=3){var nc=document.getElementById("nom-results");if(nc)nc.innerHTML='<div class="nom-hdr">Cerco nuovi luoghi...</div>';searchNominatim(q);}else{var nc=document.getElementById("nom-results");if(nc)nc.innerHTML="";}
 }
 function goTo(di,t){
   document.querySelectorAll(".nav button").forEach(function(x){x.classList.remove("on")});
@@ -855,7 +1368,7 @@ function goTo(di,t){
   document.getElementById("p1").classList.add("on");
   selDay(di);
   setTimeout(function(){
-    var all=allItems(DAYS[di]);var si=all.findIndex(function(s){return s.t===t});
+    var all=allItems(LIVE_DAYS[di]);var si=all.findIndex(function(s){return s.t===t});
     if(si>=0){var el=document.getElementById("zk-"+di+"-"+si);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});document.getElementById("sd-"+di+"-"+si).classList.add("open")}}
   },150);
 }
@@ -907,12 +1420,13 @@ function fetchW(){
 }
 
 function renderIf(){
-  document.getElementById("ifw").innerHTML='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div><div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div><div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div><div class="foot">London App - Mar 2026 \u{1F408}\u200d\u2b1b</div>';
+  document.getElementById("ifw").innerHTML='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div><div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div><div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div><div class="foot">London App - Mar 2026 \u{1F408}\u200d\u2b1b</div><div style="text-align:center;padding:0 20px 10px"><button class="wlb" onclick="confirmReset()">Ripristina itinerario originale</button></div>';
 }
 
 init();
 
 </script>
 <div class="ph-overlay" id="phrase-overlay" onclick="if(event.target===this)closePhrases()"><div class="ph-panel"><div id="phrase-content"></div></div></div>
+<div class="ed-overlay" id="edit-overlay" onclick="if(event.target===this)closeEdit()"><div class="ed-panel"><div id="edit-content"></div></div></div>
 </body>
 </html>
