@@ -841,11 +841,11 @@ function renderBeerCounter(){
 
 var TAB_HEADERS = {
   p1: {name:"London App", icon:CONFIG.iconFavicon},
-  p2: {name:"Cerca", icon:CONFIG.iconFavicon},
-  p3: {name:"Trasporti", icon:CONFIG.iconFavicon},
-  p4: {name:"Meteo", icon:CONFIG.iconFavicon},
+  p2: {name:"Cerca", icon:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%3E%3Crect%20width%3D%2230%22%20height%3D%2230%22%20rx%3D%227%22%20fill%3D%22%233b82f6%22/%3E%3Ccircle%20cx%3D%2213%22%20cy%3D%2213%22%20r%3D%226%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.5%22/%3E%3Cpath%20d%3D%22M18%2018l5%205%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E"},
+  p3: {name:"Trasporti", icon:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%3E%3Crect%20width%3D%2230%22%20height%3D%2230%22%20rx%3D%227%22%20fill%3D%22%23ef4444%22/%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%229%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%2218%22%20height%3D%226%22%20rx%3D%221%22%20fill%3D%22%23012169%22/%3E%3Ctext%20x%3D%2215%22%20y%3D%2217%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%20font-family%3D%22system-ui%22%20font-size%3D%225%22%20font-weight%3D%22700%22%3ETfL%3C/text%3E%3C/svg%3E"},
+  p4: {name:"Meteo", icon:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%3E%3Crect%20width%3D%2230%22%20height%3D%2230%22%20rx%3D%227%22%20fill%3D%22%230ea5e9%22/%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2212%22%20r%3D%225%22%20fill%3D%22%23fbbf24%22/%3E%3Cpath%20d%3D%22M14%205v2M14%2019v2M7%2012H5M23%2012h-2M8.5%207.5l1.5%201.5M18%2017l1.5%201.5M8.5%2016.5l1.5-1.5M18%207l1.5-1.5%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%2020c0-2.5%202-4%204.5-4s4.5%201.5%204.5%204%22%20fill%3D%22%23fff%22%20opacity%3D%22.8%22/%3E%3C/svg%3E"},
   p6: {name:"Pint Counter", icon:CONFIG.iconPint},
-  p5: {name:"Info", icon:CONFIG.iconFavicon}
+  p5: {name:"Info", icon:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%3E%3Crect%20width%3D%2230%22%20height%3D%2230%22%20rx%3D%227%22%20fill%3D%22%236b7280%22/%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%229%22%20r%3D%222%22%20fill%3D%22%23fff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2213%22%20width%3D%224%22%20height%3D%229%22%20rx%3D%221%22%20fill%3D%22%23fff%22/%3E%3C/svg%3E"}
 };
 function updateHeader(tabId){
   var cfg=TAB_HEADERS[tabId]||TAB_HEADERS.p1;
