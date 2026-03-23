@@ -354,18 +354,37 @@ function searchNominatim(q){
 function renderNomResults(results,q){
   var c=document.getElementById("nom-results");
   if(!c)return;
-  if(!results.length){c.innerHTML="";return}
-  var h='<div class="nom-hdr">\ud83c\udf0d Risultati da OpenStreetMap</div>';
+  if(!results.length){c.innerHTML='<div class="sr-section"><div class="sr-section-hdr">AGGIUNGI ALL\'ITINERARIO</div><div class="sr-empty-small">Nessun risultato su OpenStreetMap</div></div>';return}
+  
   var seen2={};var unique2=[];
-    results.forEach(function(r){var nm=r.display_name.split(",")[0].trim().toLowerCase();if(!seen2[nm]){seen2[nm]=true;unique2.push(r)}});
-    unique2.forEach(function(r,i){
+  results.forEach(function(r){var nm=r.display_name.split(",")[0].trim().toLowerCase();if(!seen2[nm]){seen2[nm]=true;unique2.push(r)}});
+  
+  var h='<div class="sr-section"><div class="sr-section-hdr">AGGIUNGI ALL\'ITINERARIO</div>';
+  unique2.forEach(function(r,i){
     var name=r.display_name.split(",")[0];
     var addr=r.display_name.split(",").slice(1,3).join(",").trim();
     var tp=detectType(r);
-    var ti=TI[tp]||"\ud83c\udfdb";
-    h+='<div class="sr nom-sr" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
-    h+='<div class="sr-d">'+ti+" "+tp+'</div><div class="sr-n">'+name+'</div><div class="sr-x">'+addr+'</div></div>';
+    var ti=TI[tp]||"\u{1F3DB}";
+    var cl=TC[tp]||"attr";
+    var safeName=name.replace(/'/g,"\u2019");
+    var safeAddr=addr.replace(/'/g,"\u2019");
+    var la=parseFloat(r.lat);
+    var ln=parseFloat(r.lon);
+    h+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
+    h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
+    h+='<div class="sr-item-info"><div class="sr-item-name">'+name+'</div><div class="sr-item-meta">'+tp+' \u2022 '+addr+'</div></div>';
+    h+='<div class="sr-add-badge">+ Aggiungi</div>';
+    h+='</div>';
   });
+  h+='</div>';
+  
+  // Google Maps link
+  h+='<div class="sr-gmaps" onclick="window.open(\'https://www.google.com/maps/search/'+encodeURIComponent(q+' London')+'\',\'_blank\')">';
+  h+='<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C6.4 2 3.5 4.9 3.5 8.5c0 5.2 6.5 11.5 6.5 11.5s6.5-6.3 6.5-11.5C16.5 4.9 13.6 2 10 2z" fill="#ea4335"/><circle cx="10" cy="8.5" r="2" fill="#fff"/></svg>';
+  h+='<div class="sr-gmaps-text">Cerca "'+q+'" su Google Maps</div>';
+  h+='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4v6" stroke="var(--tx3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  h+='</div>';
+  
   c.innerHTML=h;
 }
 
@@ -1140,6 +1159,12 @@ function getMetroWarning(stop){
   return warnings.length>0?warnings:null;
 }
 
+
+function filterCat(cat){
+  document.getElementById("si").value=cat;
+  doSearch();
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -1221,15 +1246,47 @@ function getZoneColor(z){
 }
 
 function updateTimers(){
-  var now=new Date(),h=now.getHours(),m=now.getMinutes();
+  var now=new Date();
+  var nowH=now.getHours(),nowM=now.getMinutes();
+  var dates=["2026-03-26","2026-03-27","2026-03-28","2026-03-29","2026-03-30","2026-03-31"];
+  var today=now.toISOString().split("T")[0];
+  var dayDate=dates[cD]||"";
+  
   allItems(LIVE_DAYS[cD]).forEach(function(s,i){
     var el=document.getElementById("tmr-"+cD+"-"+i);
     if(!el)return;
-    var parts=s.t.split(":"),sh=parseInt(parts[0]),sm=parseInt(parts[1]);
-    var diff=(sh*60+sm)-(h*60+m);
-    if(diff>0&&diff<=60)el.textContent="\u23f1 Parti tra "+diff+" min";
-    else if(diff===0)el.textContent="\u{1F4CD} Ora!";
-    else el.textContent="";
+    var parts=s.t.split(":");
+    var sh=parseInt(parts[0]),sm=parseInt(parts[1]);
+    
+    // Build target datetime
+    var target=new Date(dayDate+"T"+(sh<10?"0":"")+sh+":"+(sm<10?"0":"")+sm+":00");
+    var diffMs=target.getTime()-now.getTime();
+    
+    if(isNaN(diffMs)){el.textContent="";return}
+    
+    if(diffMs<0){
+      // Past
+      if(diffMs>-3600000)el.textContent="\u{1F4CD} In corso";
+      else el.textContent="";
+    }else{
+      var diffMin=Math.floor(diffMs/60000);
+      var diffH=Math.floor(diffMin/60);
+      var diffD=Math.floor(diffH/24);
+      var remH=diffH%24;
+      var remM=diffMin%60;
+      
+      var txt="\u23f1 ";
+      if(diffD>0){
+        txt+=diffD+"g "+remH+"h";
+      }else if(diffH>0){
+        txt+=diffH+"h "+remM+"min";
+      }else if(diffMin>0){
+        txt+=diffMin+" min";
+      }else{
+        txt="\u{1F4CD} Ora!";
+      }
+      el.textContent=txt;
+    }
   });
 }
 
@@ -1239,7 +1296,7 @@ function renderDay(i){
   var skipped=all.filter(function(_,si){return localStorage.getItem("sk-"+i+"-"+si)==="1"}).length;
   document.getElementById("pbar").style.width=(all.length?Math.round(skipped/all.length*100):0)+"%";
 
-  var h=renderQuickView()+'<div class="dhc"><div class="dhc-t">'+d.t+'</div><div class="dhc-chips"><span class="chip chip-w">'+d.wt+'</span><span class="chip '+(d.rn?"chip-r":"chip-s")+'">'+(d.rn?"\u{1F327} Pioggia":"\u2600\ufe0f Sole")+'</span>'+(d.sunrise&&d.sunrise.indexOf("T")>0?'<span class="chip chip-w">\u{1F305} '+d.sunrise.split("T")[1].substring(0,5)+'</span>':'')+(d.sunset&&d.sunset.indexOf("T")>0?'<span class="chip chip-w">\u{1F307} '+d.sunset.split("T")[1].substring(0,5)+'</span>':'')+'</span></div><div class="dhc-dress">'+d.dr+'</div>'+(d.wn?'<div class="dhc-wrn">'+d.wn+'</div>':'')+'<div class="dhc-stats"><span><b>'+all.length+'</b> tappe</span><span><b>'+pb+'</b> \u{1F37A}</span><span><b>'+fb+'</b> \u{1F37D}</span><span>~<b>'+d.km+'</b> km</span></div></div>';
+  var h=renderQuickView()+'<div class="dhc"><div class="dhc-t">'+d.t+'</div><div class="dhc-chips"><span class="chip chip-w">'+d.wt+'</span><span class="chip '+(d.rn?"chip-r":"chip-s")+'">'+(d.rn?"\u{1F327} Pioggia":"\u2600\ufe0f Sole")+'</span>'+(d.sunrise&&d.sunrise.indexOf("T")>0?'<span class="chip chip-w">\u{1F305} '+d.sunrise.split("T")[1].substring(0,5)+'</span>':'')+(d.sunset&&d.sunset.indexOf("T")>0?'<span class="chip chip-w">\u{1F307} '+d.sunset.split("T")[1].substring(0,5)+'</span>':'')+'<span class="chip chip-s">~'+d.km+' km</span><span class="chip chip-s">'+all.length+' tappe</span></div>'+(d.dr?'<div class="dhc-dress">'+d.dr+'</div>':'')+(d.wn?'<div class="dhc-wrn">'+d.wn+'</div>':'')+'</div>';
 
   h+='<div class="tl">';
   var gi=0;
@@ -1315,27 +1372,61 @@ function saveNt(d,s){localStorage.setItem("nt-"+d+"-"+s,document.getElementById(
 function toggleSkip(d,s){var k="sk-"+d+"-"+s;localStorage.setItem(k,localStorage.getItem(k)==="1"?"0":"1");renderDay(d)}
 
 function renderSearch(){
-  var c=document.getElementById("scp");
-  var showCats=["Pub/Birra","Cibo","Attrazione","Mercato","Trasporto","Hotel","Foto","Shopping"];c.innerHTML=showCats.map(function(k){return '<div class="scp" data-c="'+k+'">'+(TI[k]||"")+" "+(TN[k]||k)+'</div>'}).join("");
-  c.querySelectorAll(".scp").forEach(function(ch){ch.onclick=function(){
-    if(sf===ch.dataset.c){sf=null;ch.classList.remove("on")}
-    else{c.querySelectorAll(".scp").forEach(function(x){x.classList.remove("on")});sf=ch.dataset.c;ch.classList.add("on")}
-    doSearch();
-  }});
+  var h='<div class="sr-cats" id="scp">';
+  var cats=["Pub/Birra","Cibo","Attrazione","Mercato","Trasporto"];
+  cats.forEach(function(c){
+    h+='<span class="sr-chip" onclick="filterCat(\''+c+'\')">'+TI[c]+' '+(TN[c]||c)+'</span>';
+  });
+  h+='</div>';
+  document.getElementById("scp").innerHTML=h;
 }
 function doSearch(){
-  var q=(document.getElementById("si").value||"").toLowerCase().trim();
+  var q=document.getElementById("si").value.trim().toLowerCase();
   var r=document.getElementById("srs");
-  if(!q&&!sf){r.innerHTML='<div class="emp">Cerca un luogo per trovarlo nell\u0027itinerario o per aggiungerne uno nuovo</div>';return}
-  var res=[];
-  LIVE_DAYS.forEach(function(d){allItems(d).forEach(function(s){
-    var txt=(s.n+" "+s.ds+" "+s.tp+" "+(s.ad||"")).toLowerCase();
-    if((!q||txt.indexOf(q)>=0)&&(!sf||s.tp===sf))res.push({d:d,s:s});
-  })});
-  var h=res.length?res.map(function(x){return '<div class="sr" onclick="goTo('+x.d.id+',\''+x.s.t+'\')"><div class="sr-d">'+x.d.pl+'</div><div class="sr-n">'+x.s.n+'</div><div class="sr-x">'+x.s.ds.substring(0,90)+'</div></div>'}).join(""):'<div class="emp">Nessun risultato</div>';
-  if(q&&q.length>2)h+='<div class="sr-gm"><a href="https://www.google.com/maps/search/'+encodeURIComponent(q+" London")+'" target="_blank">'+ICN.gmaps+' Cerca "'+q+'" su Google Maps</a></div>';
+  var nc=document.getElementById("nom-results");
+  
+  if(!q){
+    r.innerHTML='<div class="sr-empty">Cerca un luogo nell\'itinerario o aggiungi nuovi posti</div>';
+    if(nc)nc.innerHTML="";
+    return;
+  }
+  
+  // Local results
+  var found=[];
+  LIVE_DAYS.forEach(function(d,di){
+    allItems(d).forEach(function(s,si){
+      if(s.n.toLowerCase().indexOf(q)>=0||s.ds.toLowerCase().indexOf(q)>=0||(s.ad&&s.ad.toLowerCase().indexOf(q)>=0)){
+        found.push({stop:s,dayIdx:di,stopIdx:si,day:d.pl});
+      }
+    });
+  });
+  
+  var h='';
+  if(found.length>0){
+    h+='<div class="sr-section"><div class="sr-section-hdr">NELL\'ITINERARIO</div>';
+    found.forEach(function(f){
+      var cl=TC[f.stop.tp]||"attr";
+      var ti=TI[f.stop.tp]||"\u{1F3DB}";
+      var tn=TN[f.stop.tp]||f.stop.tp;
+      h+='<div class="sr-item" onclick="goTo('+f.dayIdx+',\''+f.stop.t+'\')">';
+      h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
+      h+='<div class="sr-item-info"><div class="sr-item-name">'+f.stop.n+'</div><div class="sr-item-meta">'+f.day+' \u2022 '+tn+(f.stop.ad?' \u2022 '+f.stop.ad:'')+'</div></div>';
+      h+='<svg class="sr-item-arr" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="var(--tx3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }else{
+    h+='<div class="sr-section"><div class="sr-section-hdr">NELL\'ITINERARIO</div><div class="sr-empty-small">Nessun risultato</div></div>';
+  }
   r.innerHTML=h;
-  if(q&&q.length>=3){var nc=document.getElementById("nom-results");if(nc)nc.innerHTML='<div class="nom-hdr">Cerco nuovi luoghi...</div>';searchNominatim(q);}else{var nc=document.getElementById("nom-results");if(nc)nc.innerHTML="";}
+  
+  // Nominatim search
+  if(q&&q.length>=3){
+    if(nc)nc.innerHTML='<div class="sr-section"><div class="sr-section-hdr">AGGIUNGI ALL\'ITINERARIO</div><div class="sr-empty-small">\u23f3 Cerco...</div></div>';
+    searchNominatim(q);
+  }else{
+    if(nc)nc.innerHTML="";
+  }
 }
 function goTo(di,t){
   document.querySelectorAll(".nav button").forEach(function(x){x.classList.remove("on")});
