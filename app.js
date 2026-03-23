@@ -1215,7 +1215,7 @@ function renderDay(i){
     }
   });
   h+='</div>';
-  h+='<div style="padding:0 20px"><button class="add-stop-btn" onclick="showSearchAdd('+i+',allItems(LIVE_DAYS['+i+']).length-1)">+ Cerca e aggiungi tappa</button></div>';
+  h+='<div class="add-between" style="padding:8px 0"><a class="add-circle" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showSearchAdd('+i+',allItems(LIVE_DAYS['+i+']).length-1)">'+ICN.add_here+'</a></div>';
   document.getElementById("dc").innerHTML=h;
   updateTimers();
 }
@@ -1308,10 +1308,10 @@ function fetchW(){
 function refreshInfo(){renderIf()}
 function renderIf(){
   var h='<div class="ic"><h3>\u{1F4B1} Convertitore EUR/GBP</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="number" class="ed-input" id="fx-input" placeholder="Importo" style="width:100px;flex:none" oninput="convertCurrency()"><select class="ed-input" id="fx-dir" style="width:auto;flex:none" onchange="convertCurrency()"><option value="eur2gbp">EUR \u2192 GBP</option><option value="gbp2eur">GBP \u2192 EUR</option></select><div id="fx-output" style="font-size:20px;font-weight:700;color:var(--pub)">0.00 GBP</div></div><div id="fx-rate" style="font-size:11px;color:var(--tx3);margin-top:6px">1 EUR = '+(typeof EUR_GBP_RATE!=='undefined'?EUR_GBP_RATE:0.86).toFixed(4)+' GBP</div></div>';
-  h+='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div>';
-  h+='<div class="ic"><h3>\u{1F4D6} Diario di viaggio</h3><button class="wlb" onclick="exportDiary()" style="width:100%">\u{1F4BE} Esporta diario come HTML</button></div>';
+    
   h+='<div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div>';
   h+='<div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div>';
+  h+='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div>';
   h+='<div class="foot">London App - Mar 2026 \u{1F408}\u200d\u2b1b</div>';
   
   document.getElementById("ifw").innerHTML=h;
