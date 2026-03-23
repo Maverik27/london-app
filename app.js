@@ -891,31 +891,25 @@ function updateHeader(tabId){
 /* --- Live weather cache --- */
 var WEATHER_CACHE = null;
 
-function fetchWeatherAuto() {
-  fetch(CONFIG.weatherUrl+"?latitude="+CONFIG.weatherLat+"&longitude="+CONFIG.weatherLng+"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,sunrise,sunset&timezone="+CONFIG.weatherTz+"&start_date="+CONFIG.startDate+"&end_date="+CONFIG.endDate)
-  .then(function(r){return r.json()})
-  .then(function(d){
-    if(!d.daily)return;
-    WEATHER_CACHE=d.daily;
-    // Update LIVE_DAYS weather data
-    var lb=["Gio 26","Ven 27","Sab 28","Dom 29","Lun 30","Mar 31"];
-    d.daily.time.forEach(function(t,i){
-      if(i<LIVE_DAYS.length){
-        var mn=Math.round(d.daily.temperature_2m_min[i]);
-        var mx=Math.round(d.daily.temperature_2m_max[i]);
-        var pp=d.daily.precipitation_probability_max[i];
-        LIVE_DAYS[i].wt=mn+"\u00b0/"+mx+"\u00b0C";
-        LIVE_DAYS[i].rn=pp>30?1:0;
-        LIVE_DAYS[i].wind=d.daily.windspeed_10m_max?Math.round(d.daily.windspeed_10m_max[i]):null;
-        LIVE_DAYS[i].sunrise=d.daily.sunrise?d.daily.sunrise[i]:null;
-        LIVE_DAYS[i].sunset=d.daily.sunset?d.daily.sunset[i]:null;
-      }
-    });
-    renderDay(cD);
-    renderMt();
-  })
-  .catch(function(){});
+/* --- Weather state --- */
+var wtDays=null;
+var wtSelected=0;
+var wtOpen=-1;
+
+function wtToggle(i){
+  if(wtOpen===i){wtOpen=-1}else{wtOpen=i}
+  wtSelected=i;
+  renderMt();
 }
+
+function windIcon(kmh){
+  if(kmh<10)return '<svg width="20" height="16" viewBox="0 0 20 16"><path d="M2 8c2-2 4 2 6 0" stroke="var(--tx3)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  if(kmh<20)return '<svg width="20" height="16" viewBox="0 0 20 16"><path d="M2 5c2-2 4 2 6 0" stroke="var(--tx2)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M2 10c2-2 4 2 6 0" stroke="var(--tx2)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  return '<svg width="20" height="16" viewBox="0 0 20 16"><path d="M2 3c2-2 4 2 6 0" stroke="var(--tx)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M2 8c2-2 4 2 6 0" stroke="var(--tx)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M2 13c2-2 4 2 6 0" stroke="var(--tx)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+}
+
+
+function fetchWeatherAuto(){fetchW()}
 
 
 function renderQuickView(){
@@ -1343,28 +1337,135 @@ function renderTr(){
 }
 
 function renderMt(){
-  document.getElementById("mtw").innerHTML='<div class="ic"><h3>\u2600\ufe0f Meteo</h3><div id="mt-data"><div class="mt-grid"><div class="mt-hdr">Giorno</div><div class="mt-hdr">Temp</div><div class="mt-hdr">Pioggia</div><div class="mt-hdr">Vento</div>'+LIVE_DAYS.map(function(d){return '<div class="mt-cell mt-day">'+(d.rn?"\u{1F327}":"\u2600\ufe0f")+" "+d.pl+'</div><div class="mt-cell">'+d.wt+'</div><div class="mt-cell">'+(d.rn?"probabile":"basso")+'</div><div class="mt-cell">'+(d.wind?"\u{1F4A8} "+d.wind+" km/h":"--")+'</div>'}).join("")+'</div></div><button class="wlb" onclick="fetchW()">\u{1F504} Aggiorna live</button><div id="wl" style="margin-top:8px;font-size:12px;color:var(--tx2)"></div></div>';
+  var h='<div class="wt-wrap">';
+  
+  // Hero card - show selected day or today
+  var heroIdx=typeof wtSelected==="number"?wtSelected:0;
+  var wd=wtDays&&wtDays.length?wtDays[heroIdx]:null;
+  
+  h+='<div class="wt-hero" id="wt-hero">';
+  h+='<div class="wt-refresh" onclick="fetchW()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 2.5v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 8a6 6 0 0111.5-2.5L13.5 6.5M2.5 13.5v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8a6 6 0 01-11.5 2.5L2.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+  if(wd){
+    var wIco=wd.rain>30?"\u{1F327}\ufe0f":"\u2600\ufe0f";
+    h+='<div class="wt-hero-city">Londra</div>';
+    h+='<div class="wt-hero-ico">'+wIco+'</div>';
+    h+='<div class="wt-hero-temp"><span class="wt-hero-max">'+wd.max+'\u00b0</span><span class="wt-hero-min"> / '+wd.min+'\u00b0</span></div>';
+    h+='<div class="wt-hero-date">'+wd.label+'</div>';
+    h+='<div class="wt-hero-details">';
+    h+='<div class="wt-hd"><div>\u{1F4A7}</div><div>'+wd.rain+'%</div></div>';
+    h+='<div class="wt-hd"><div>\u{1F4A8}</div><div>'+wd.wind+' km/h</div></div>';
+    h+='<div class="wt-hd"><div>\u{1F305}</div><div>'+wd.sunrise+'</div></div>';
+    h+='<div class="wt-hd"><div>\u{1F307}</div><div>'+wd.sunset+'</div></div>';
+    h+='</div>';
+    if(wd.dress)h+='<div class="wt-hero-dress">\u{1F9E5} '+wd.dress+'</div>';
+  }else{
+    h+='<div class="wt-hero-city">Londra</div>';
+    h+='<div class="wt-hero-ico">--</div>';
+    h+='<div class="wt-hero-temp"><span class="wt-hero-max">--\u00b0</span></div>';
+    h+='<div class="wt-hero-date">Premi aggiorna</div>';
+  }
+  h+='</div>';
+  
+  // Day list
+  h+='<div class="wt-list">';
+  h+='<div class="wt-list-hdr"><span></span><span></span><span>Min</span><span>Max</span><span>\u{1F4A7}</span><span>\u{1F4A8}</span><span></span></div>';
+  
+  if(wtDays&&wtDays.length){
+    wtDays.forEach(function(wd,i){
+      var isTrip=wd.isTrip;
+      var isOpen=wtOpen===i;
+      var rainHigh=wd.rain>30;
+      var windSvg=windIcon(wd.wind);
+      
+      h+='<div class="wt-row'+(isTrip?' wt-trip':'')+(isOpen?' wt-open':'')+'" onclick="wtToggle('+i+')">';
+      h+='<div class="wt-row-main">';
+      h+='<span class="wt-row-day">'+wd.short+(isTrip?'<span class="wt-badge">viaggio</span>':'')+'</span>';
+      h+='<span class="wt-row-ico">'+(rainHigh?"\u{1F327}\ufe0f":"\u2600\ufe0f")+'</span>';
+      h+='<span class="wt-row-min">'+wd.min+'\u00b0</span>';
+      h+='<span class="wt-row-max">'+wd.max+'\u00b0</span>';
+      h+='<span class="wt-row-rain'+(rainHigh?' hi':'')+'">'+wd.rain+'%</span>';
+      h+='<span class="wt-row-wind">'+windSvg+'</span>';
+      h+='<span class="wt-row-arr">'+(isOpen?'\u25BE':'\u25B8')+'</span>';
+      h+='</div>';
+      
+      if(isOpen){
+        h+='<div class="wt-row-detail">';
+        h+='<span>\u{1F305} '+wd.sunrise+'</span>';
+        h+='<span>\u{1F307} '+wd.sunset+'</span>';
+        if(wd.dress)h+='<span class="wt-row-dress">\u{1F9E5} '+wd.dress+'</span>';
+        h+='</div>';
+      }
+      h+='</div>';
+    });
+  }else{
+    h+='<div style="padding:20px;text-align:center;color:var(--tx3)">Premi aggiorna per caricare le previsioni</div>';
+  }
+  h+='</div>';
+  
+  h+='<div class="wt-footer" id="wt-footer"></div>';
+  h+='</div>';
+  document.getElementById("mtw").innerHTML=h;
 }
 function fetchW(){
-  var el=document.getElementById("wl");el.textContent="Caricamento...";
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Europe/London&start_date=2026-03-26&end_date=2026-03-31")
+  var el=document.getElementById("wt-footer");
+  if(el)el.textContent="\u23f3 Aggiornamento...";
+  fetch(CONFIG.weatherUrl+"?latitude="+CONFIG.weatherLat+"&longitude="+CONFIG.weatherLng+"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,sunrise,sunset&timezone="+CONFIG.weatherTz+"&forecast_days=14")
   .then(function(r){return r.json()})
   .then(function(d){
-    if(!d.daily){el.textContent="N/A";return}
-    var lb=["Gio 26","Ven 27","Sab 28","Dom 29","Lun 30","Mar 31"];
-    var h='<div class="mt-grid"><div class="mt-hdr">Giorno</div><div class="mt-hdr">Temp</div><div class="mt-hdr">Pioggia</div><div class="mt-hdr">Vento</div>';
+    if(!d.daily)return;
+    WEATHER_CACHE=d.daily;
+    wtDays=[];
+    var tripDates={};
+    var tripStart=new Date(CONFIG.startDate);
+    for(var dd=0;dd<6;dd++){
+      var dt=new Date(tripStart);dt.setDate(dt.getDate()+dd);
+      tripDates[dt.toISOString().split("T")[0]]=dd;
+    }
+    var dayNames=["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
+    var monthNames=["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+    
     d.daily.time.forEach(function(t,i){
+      var dt=new Date(t+"T00:00:00");
+      var dayN=dayNames[dt.getDay()];
+      var dayNum=dt.getDate();
+      var mon=monthNames[dt.getMonth()];
       var mn=Math.round(d.daily.temperature_2m_min[i]);
       var mx=Math.round(d.daily.temperature_2m_max[i]);
-      var pp=d.daily.precipitation_probability_max[i];
-      var ws=d.daily.windspeed_10m_max?Math.round(d.daily.windspeed_10m_max[i]):"?";
-      h+='<div class="mt-cell mt-day">'+(pp>30?"\u{1F327}":"\u2600\ufe0f")+" "+(lb[i]||t)+'</div><div class="mt-cell">'+mn+'\u00b0 / '+mx+'\u00b0</div><div class="mt-cell">'+(pp>30?'<span style="color:var(--wrn)">'+pp+'%</span>':'<span style="color:var(--ok)">'+pp+'%</span>')+'</div><div class="mt-cell">\u{1F4A8} '+ws+' km/h</div>';
+      var pp=d.daily.precipitation_probability_max[i]||0;
+      var ws=d.daily.windspeed_10m_max?Math.round(d.daily.windspeed_10m_max[i]):0;
+      var sr=d.daily.sunrise&&d.daily.sunrise[i]?d.daily.sunrise[i].split("T")[1].substring(0,5):"--";
+      var ss=d.daily.sunset&&d.daily.sunset[i]?d.daily.sunset[i].split("T")[1].substring(0,5):"--";
+      var isTrip=tripDates[t]!==undefined;
+      var tripIdx=tripDates[t];
+      
+      var dress="";
+      if(isTrip&&tripIdx!==undefined&&LIVE_DAYS[tripIdx])dress=LIVE_DAYS[tripIdx].dr||"";
+      else if(pp>30)dress="Impermeabile consigliato";
+      else if(mx<8)dress="Vestiti pesanti";
+      else if(mx<15)dress="Giubbotto, strati";
+      
+      wtDays.push({date:t,short:dayN+" "+dayNum,label:dayN+" "+dayNum+" "+mon,min:mn,max:mx,rain:pp,wind:ws,sunrise:sr,sunset:ss,isTrip:isTrip,tripIdx:tripIdx,dress:dress});
+      
+      // Sync to LIVE_DAYS
+      if(isTrip&&tripIdx!==undefined&&LIVE_DAYS[tripIdx]){
+        LIVE_DAYS[tripIdx].wt=mn+"\u00b0/"+mx+"\u00b0C";
+        LIVE_DAYS[tripIdx].rn=pp>30?1:0;
+        LIVE_DAYS[tripIdx].wind=ws;
+        LIVE_DAYS[tripIdx].sunrise=d.daily.sunrise?d.daily.sunrise[i]:null;
+        LIVE_DAYS[tripIdx].sunset=d.daily.sunset?d.daily.sunset[i]:null;
+      }
     });
-    h+='</div><div style="font-size:11px;color:var(--tx3);margin-top:6px">\u{1F4E1} Open-Meteo \u2022 '+new Date().toLocaleString("it-IT")+'</div>';
-    document.getElementById("mt-data").innerHTML=h;
-    el.textContent="";
+    
+    wtSelected=0;
+    renderMt();
+    renderDay(cD);
+    var ft=document.getElementById("wt-footer");
+    if(ft)ft.textContent="Open-Meteo \u2022 "+new Date().toLocaleString("it-IT");
   })
-  .catch(function(){el.textContent="Errore."});
+  .catch(function(e){
+    var ft=document.getElementById("wt-footer");
+    if(ft)ft.textContent="\u274c "+e.message;
+  });
 }
 
 function refreshInfo(){renderIf()}
