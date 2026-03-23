@@ -893,6 +893,7 @@ function updateHeader(tabId){
 
 /* --- Live weather cache --- */
 var WEATHER_CACHE = null;
+var TFL_STATUS = {};
 
 /* --- Weather state --- */
 var wtDays=null;
@@ -1111,6 +1112,34 @@ function initSwipe(){
   },{passive:true});
 }
 
+
+/* --- Metro status check for timeline --- */
+function getMetroWarning(stop){
+  if(stop.tp!=="Trasporto"||!stop.ds)return null;
+  if(!TFL_STATUS||Object.keys(TFL_STATUS).length===0)return null;
+  
+  var ds=stop.ds.toLowerCase();
+  var lineMap={
+    "circle":"circle","district":"district","central":"central",
+    "northern":"northern","jubilee":"jubilee","h&c":"hammersmith-city",
+    "hammersmith":"hammersmith-city","piccadilly":"piccadilly",
+    "victoria":"victoria","bakerloo":"bakerloo","metropolitan":"metropolitan",
+    "dlr":"dlr","elizabeth":"elizabeth","overground":"london-overground"
+  };
+  
+  var warnings=[];
+  for(var name in lineMap){
+    if(ds.indexOf(name)>=0){
+      var id=lineMap[name];
+      var st=TFL_STATUS[id];
+      if(st&&st.sev!==10&&st.sev!==1){
+        warnings.push({line:name.charAt(0).toUpperCase()+name.slice(1),status:st.desc,sev:st.sev});
+      }
+    }
+  }
+  return warnings.length>0?warnings:null;
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -1236,8 +1265,10 @@ function renderDay(i){
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
       var diaryInfo=renderDiaryBtn(i,gi);
+      var metroWarn=getMetroWarning(s);
       h+='<div class="zk-nm">'+s.n+(diaryInfo.hasPhoto?' <span style="font-size:12px">\u{1F4F7}</span>':'')+(diaryInfo.hasEntries&&!diaryInfo.hasPhoto?' <span style="font-size:12px">\u{1F4DD}</span>':'')+' <a class="ed-pen" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showEditStop('+i+','+gi+')" title="Modifica">'+ICN.edit+'</a></div>';
       h+='<div class="zk-ds">'+s.ds+'</div>';
+      if(metroWarn){metroWarn.forEach(function(w){h+='<div class="zk-metro-warn"><span class="zk-mw-dot'+(w.sev<5?' zk-mw-bad':' zk-mw-warn')+'"></span>'+w.line+': '+w.status+'</div>'})}
       if(tgs)h+='<div class="zk-tags">'+tgs+'</div>';
       if(s.du)h+='<div class="zk-du">'+s.du+'</div>';
       h+='<div class="zk-timer" id="tmr-'+i+'-'+gi+'"></div>';
@@ -1353,6 +1384,30 @@ function fetchTfl(){
     
     document.getElementById("tr-list").innerHTML=h;
     document.getElementById("tr-stats").innerHTML='<div class="tr-stat"><div class="tr-stat-n" style="color:var(--ok)">'+ok+'</div><div class="tr-stat-l">attive</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--wrn)">'+warn+'</div><div class="tr-stat-l">rallentate</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--err)">'+bad+'</div><div class="tr-stat-l">sospese</div></div>';
+    // Store status for timeline cross-reference
+    TFL_STATUS={};
+    data.forEach(function(l){
+      var st=l.lineStatuses&&l.lineStatuses[0]?l.lineStatuses[0]:{};
+      TFL_STATUS[l.id]={sev:st.statusSeverity||0,desc:st.statusSeverityDescription||"",reason:st.reason||""};
+    });
+    
+    // Closures section
+    var closures='';
+    data.forEach(function(l){
+      var st=l.lineStatuses&&l.lineStatuses[0]?l.lineStatuses[0]:{};
+      if(st.reason&&st.statusSeverity!==10&&st.statusSeverity!==1){
+        var lName=names[l.id]||l.name;
+        var lColor=colors[l.id]||"#888";
+        closures+='<div class="tr-closure"><div class="tr-closure-line" style="border-left:3px solid '+lColor+';padding-left:10px"><div class="tr-closure-name">'+lName+'</div><div class="tr-closure-reason">'+st.reason.replace(/'/g,"&#39;")+'</div></div></div>';
+      }
+    });
+    if(closures){
+      document.getElementById("tr-list").innerHTML+=('<div class="tr-closures-hdr">AVVISI E CHIUSURE</div>'+closures);
+    }
+    
+    // Refresh timeline to show metro warnings
+    renderDay(cD);
+    
     document.getElementById("tr-footer").textContent="TfL API \u2022 "+new Date().toLocaleString("it-IT");
   })
   .catch(function(e){
