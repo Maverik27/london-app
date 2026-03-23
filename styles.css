@@ -297,7 +297,7 @@ html.light .tgl::after{left:21px}
 .diary-del:active{opacity:.7}
 
 /* === APP MENU === */
-.menu-btn{background:none;border:none;font-size:20px;cursor:pointer;padding:4px;line-height:1;margin-right:4px}
+.menu-btn{background:none;border:none;font-size:24px;cursor:pointer;padding:4px 8px;line-height:1;color:var(--tx);letter-spacing:-1px}
 .app-menu{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.6);display:none;justify-content:flex-end;align-items:flex-start;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .app-menu.open{display:flex}
 .menu-panel{margin:60px 16px 0 0;background:var(--bg2);border:1px solid var(--brd);border-radius:14px;overflow:hidden;min-width:220px;box-shadow:0 8px 30px rgba(0,0,0,.4)}

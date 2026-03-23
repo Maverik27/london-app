@@ -30,14 +30,7 @@
   <div>
     <h1><img class="top-ico" id="hdr-ico" src="favicon.png" alt=""><span id="hdr-name">London App</span></h1>
   </div>
-  <div style="display:flex;align-items:center;gap:4px">
-    <button class="menu-btn" onclick="toggleMenu()">&#x2699;&#xFE0F;</button>
-    <div class="tgl-wrap">
-      <span class="tgl-ic">&#x1F319;</span>
-      <button class="tgl" onclick="document.documentElement.classList.toggle('light');localStorage.setItem('th',document.documentElement.classList.contains('light')?'l':'d')"></button>
-      <span class="tgl-ic">&#x2600;&#xFE0F;</span>
-    </div>
-  </div>
+  <button class="menu-btn" onclick="toggleMenu()">&#x22EE;</button>
 </div>
 
 <!-- Tab: Piano -->
@@ -100,6 +93,7 @@
     <div class="menu-item" onclick="showGuide()"><span>&#x1F4D6;</span> Guida</div>
     <div class="menu-item" onclick="closeMenu();confirmReset()"><span>&#x1F504;</span> Ripristina itinerario</div>
     <div class="menu-item" onclick="closeMenu();exportDiary()"><span>&#x1F4BE;</span> Esporta diario</div>
+    <div class="menu-item" onclick="toggleTheme()"><span id="theme-ico">&#x1F319;</span> <span id="theme-label">Tema chiaro</span></div>
     <div class="menu-item" onclick="closeMenu()"><span>&#x2715;</span> Chiudi</div>
   </div>
 </div>

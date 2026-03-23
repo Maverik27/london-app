@@ -991,9 +991,28 @@ function convertCurrency(){
 
 
 /* --- Menu & Guide --- */
+
+function toggleTheme(){
+  document.documentElement.classList.toggle("light");
+  var isLight=document.documentElement.classList.contains("light");
+  localStorage.setItem("th",isLight?"l":"d");
+  var ico=document.getElementById("theme-ico");
+  var lbl=document.getElementById("theme-label");
+  if(ico)ico.innerHTML=isLight?"\u2600\ufe0f":"\u{1F319}";
+  if(lbl)lbl.textContent=isLight?"Tema scuro":"Tema chiaro";
+}
+function updateThemeMenu(){
+  var isLight=document.documentElement.classList.contains("light");
+  var ico=document.getElementById("theme-ico");
+  var lbl=document.getElementById("theme-label");
+  if(ico)ico.innerHTML=isLight?"\u2600\ufe0f":"\u{1F319}";
+  if(lbl)lbl.textContent=isLight?"Tema scuro":"Tema chiaro";
+}
+
 function toggleMenu(){
   var m=document.getElementById("app-menu");
   if(m)m.classList.toggle("open");
+  updateThemeMenu();
 }
 function closeMenu(){
   var m=document.getElementById("app-menu");
