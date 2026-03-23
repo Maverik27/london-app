@@ -22,17 +22,31 @@ var TN = {
 
 /* --- SVG Icons (22x22, uniform style) --- */
 var ICN = {
-  citymapper: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3faa3c"/><circle cx="6" cy="11" r="2.2" fill="#fff"/><circle cx="16" cy="11" r="2.2" fill="#fff"/><path d="M8.5 11h1.5l2-3 2 3h1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  gmaps: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2C7.4 2 4.5 4.9 4.5 8.5c0 5.2 6.5 11.5 6.5 11.5s6.5-6.3 6.5-11.5C17.5 4.9 14.6 2 11 2z" fill="#ea4335"/><path d="M11 2c1.8 0 3.4.7 4.6 1.9l-4.6 4.6V2z" fill="#4285f4"/><path d="M6.4 3.9C7.6 2.7 9.2 2 11 2v6.5L6.4 3.9z" fill="#fbbc04"/><path d="M4.5 8.5c0-1.5.4-2.8 1.2-3.9L11 8.5H4.5z" fill="#fbbc04"/><path d="M4.5 8.5H11v2.8L6.2 13c-1-1.3-1.7-2.8-1.7-4.5z" fill="#34a853"/><path d="M11 8.5l4.6-4.6c.8 1.1 1.2 2.4 1.2 3.9 0 1.7-.6 3.2-1.7 4.5L11 11.3V8.5z" fill="#4285f4"/><path d="M11 11.3l4.1 1.5c-1.5 2.4-3.2 4.5-4.1 5.5-.9-1-2.6-3.1-4.1-5.5L11 11.3z" fill="#34a853"/><circle cx="11" cy="8.5" r="2.5" fill="#1a0e04"/></svg>',
-  wc: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#38bdf8"/><path d="M7 8h8v2a4 4 0 01-8 0V8z" fill="#fff"/><rect x="8.5" y="5" width="5" height="3.5" rx="1" fill="#fff"/><path d="M9.5 14v2h3v-2" stroke="#fff" stroke-width="1.2"/><rect x="8.5" y="15.5" width="5" height="1.5" rx=".5" fill="#fff"/></svg>',
-  water: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#0ea5e9"/><path d="M11 4.5S6.5 9.5 6.5 12.5a4.5 4.5 0 009 0c0-3-4.5-8-4.5-8z" fill="#fff"/><path d="M9.5 13.5a1.5 2 0 003 0" stroke="#0ea5e9" stroke-width="1" stroke-linecap="round"/></svg>',
-  skip_stop: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#6b7280"/><path d="M5 11h12M9 7l-4 4 4 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  delete_stop: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#ef4444"/><path d="M7 8h8l-.8 8.5a1 1 0 01-1 .9h-4.4a1 1 0 01-1-.9L7 8z" fill="#fff"/><rect x="6" y="6" width="10" height="2" rx=".5" fill="#fff"/><rect x="9" y="4.5" width="4" height="2" rx=".5" fill="#fff"/></svg>',
+  // Navigation & Maps
+  citymapper: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3faa3c"/><path d="M5 14l3-8 3 5 3-5 3 8" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+
+  gmaps: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#ea4335"/><path d="M11 4C8.2 4 6 6.2 6 9c0 4 5 9 5 9s5-5 5-9c0-2.8-2.2-5-5-5z" fill="#fff"/><circle cx="11" cy="9" r="2" fill="#ea4335"/></svg>',
+
+  // Facilities
+  wc: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#38bdf8"/><circle cx="8" cy="7" r="1.5" fill="#fff"/><path d="M6 10h4l-1 7H7l-1-7z" fill="#fff"/><circle cx="14" cy="7" r="1.5" fill="#fff"/><path d="M12.5 10h3l-.5 3h-2l-.5-3zM13.5 13l-.5 4M14.5 13l.5 4" stroke="#fff" stroke-width="1" stroke-linecap="round"/></svg>',
+
+  water: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#0ea5e9"/><path d="M11 5s-4 4.5-4 7a4 4 0 008 0c0-2.5-4-7-4-7z" fill="#fff"/></svg>',
+
+  // Actions
+  skip_stop: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#6b7280"/><path d="M6 6l10 5-10 5V6z" fill="#fff"/><path d="M16 6v10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
+
+  delete_stop: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#ef4444"/><path d="M7 8h8l-.7 8a1 1 0 01-1 .9H8.7a1 1 0 01-1-.9L7 8z" fill="#fff"/><path d="M6 8h10M9 5.5h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
+
   add_here: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"/><path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-  diary: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#14b8a6"/><path d="M8 5h6l1.5 2H17a1 1 0 011 1v8a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1h1.5L8 5z" fill="#fff"/><circle cx="11" cy="11.5" r="3.5" fill="#14b8a6"/><circle cx="11" cy="11.5" r="2" fill="#fff"/></svg>',
-  edit: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#6b7280"/><path d="M13.5 5.5l3 3M6 13l-1 4 4-1 8.5-8.5-3-3L6 13z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  phrases: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#4f46e5"/><path d="M4 7h5M6.5 5v2M5 9c1 2 3 3 5 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M13 9l2 6 2-6M14 13h2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  book: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3b82f6"/><rect x="6" y="5" width="10" height="12" rx="1.5" fill="#fff"/><path d="M8.5 8h5M8.5 10.5h5M8.5 13h3" stroke="#3b82f6" stroke-width="1.2" stroke-linecap="round"/></svg>'
+
+  // Features
+  diary: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#14b8a6"/><rect x="5" y="7" width="12" height="9" rx="1.5" fill="#fff"/><path d="M8 5.5h6l1.5 2h-9L8 5.5z" fill="#fff"/><circle cx="11" cy="11.5" r="2.5" fill="#14b8a6"/><circle cx="11" cy="11.5" r="1" fill="#fff"/></svg>',
+
+  edit: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#6b7280"/><path d="M13 5.5l3.5 3.5M6.5 12l-1 4.5 4.5-1L16.5 9l-3.5-3.5L6.5 12z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+
+  phrases: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#7c3aed"/><path d="M4 8h5M6.5 6v2M5 10c1 2 3 3 5 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M13 9l2 6 2-6M14 13h2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+
+  book: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="5" fill="#3b82f6"/><rect x="6.5" y="5" width="9" height="12" rx="1.5" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M9 8.5h4M9 11h4M9 13.5h2.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>'
 };
 
 /* --- Nominatim type detection --- */
