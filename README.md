@@ -1,36 +1,36 @@
-# London App
+# 🇬🇧 London App
 
 PWA per pianificare e vivere un viaggio a Londra. Timeline interattiva, meteo live, trasporti TfL, pint counter e molto altro.
 
 ## Funzionalità
 
-**📅 Timeline** - Itinerario giorno per giorno con zone colorate, orari, descrizioni, indicazioni stradali e timer alla prossima tappa.
+**📅 Timeline** — Itinerario giorno per giorno con zone colorate, orari, descrizioni, indicazioni stradali e timer alla prossima tappa.
 
-**🗺 Mappa** - Mappa Leaflet con marker delle tappe del giorno e geolocalizzazione GPS.
+**🗺 Mappa** — Mappa Leaflet con marker delle tappe del giorno e geolocalizzazione GPS.
 
-**✏️ Modifica itinerario** - Aggiungi, modifica, riordina ed elimina tappe. Cerca nuovi luoghi su OpenStreetMap con tipo e coordinate automatiche.
+**✏️ Modifica itinerario** — Aggiungi, modifica, riordina ed elimina tappe. Cerca nuovi luoghi su OpenStreetMap con tipo e coordinate automatiche.
 
-**💬 Frasi utili** - Frasi contestuali italiano/inglese per ogni tipo di tappa (pub, ristorante, metro, hotel...). Pronuncia vocale e traduttore libero.
+**💬 Frasi utili** — Frasi contestuali italiano/inglese per ogni tipo di tappa (pub, ristorante, metro, hotel...). Pronuncia vocale e traduttore libero.
 
-**🧭 Navigazione** - Deep link a Citymapper (partenza da GPS) e Google Maps per ogni tappa.
+**🧭 Navigazione** — Deep link a Citymapper (partenza da GPS) e Google Maps per ogni tappa.
 
-**☀️ Meteo** - Previsioni 14 giorni da Open-Meteo con hero card, accordion dettagli, icone vento a ondine, alba/tramonto e consigli abbigliamento. I giorni del viaggio sono evidenziati.
+**☀️ Meteo** — Previsioni 14 giorni da Open-Meteo con hero card, accordion dettagli, icone vento a ondine, alba/tramonto e consigli abbigliamento. I giorni del viaggio sono evidenziati.
 
-**🚇 Trasporti** - Stato in tempo reale di tutte le linee TfL (metro, DLR, Elizabeth, Overground, Tram). Aggiornamento automatico all'apertura.
+**🚇 Trasporti** — Stato in tempo reale di tutte le linee TfL (metro, DLR, Elizabeth, Overground, Tram). Aggiornamento automatico all'apertura.
 
-**🍺 Pint Counter** - Beer passport con tutti i pub dell'itinerario. Conta le pinte, sblocca achievement (First Pint, Hat Trick, Pub Crawler...) e consulta statistiche.
+**🍺 Pint Counter** — Beer passport con tutti i pub dell'itinerario. Conta le pinte, sblocca achievement (First Pint, Hat Trick, Pub Crawler...) e consulta statistiche.
 
-**📷 Diario** - Scatta foto o caricale dalla galleria, aggiungi note per ogni tappa. Foto compresse automaticamente. Esportabile come HTML.
+**📷 Diario** — Scatta foto o caricale dalla galleria, aggiungi note per ogni tappa. Foto compresse automaticamente. Esportabile come HTML.
 
-**💱 Convertitore** - EUR/GBP con tasso aggiornato in tempo reale.
+**💱 Convertitore** — EUR/GBP con tasso aggiornato in tempo reale.
 
-**🔍 Cerca** - Trova tappe nell'itinerario o cerca nuovi luoghi su OpenStreetMap per aggiungerli.
+**🔍 Cerca** — Trova tappe nell'itinerario o cerca nuovi luoghi su OpenStreetMap per aggiungerli.
 
-**👆 Swipe** - Scorri tra giorni nella timeline e tra tab con swipe laterale.
+**👆 Swipe** — Scorri tra giorni nella timeline e tra tab con swipe laterale.
 
-**🌙 Tema** - Dark e light mode dal menu.
+**🌙 Tema** — Dark e light mode dal menu.
 
-**🔒 PIN** - Schermata di blocco a 6 cifre.
+**🔒 PIN** — Schermata di blocco a 6 cifre.
 
 ## Struttura file
 
@@ -84,4 +84,4 @@ Quando `config.js > version` cambia, l'itinerario si resetta automaticamente al 
 
 ---
 
-*London App - Mar 2026* 🐈‍⬛
+*London App — Mar 2026* 🐈‍⬛

@@ -734,8 +734,21 @@ function exportDiary(){
 function renderBeerPage(){
   var beers=loadBeers();
   var total=0;for(var k in beers)total+=beers[k];
-  var h='<div class="bc-header"><div class="bc-total">'+total+'</div></div>';
+  var stats=getBeerStats();
+  
+  var h='<div class="bc-wrap">';
+  // Hero
+  h+='<div class="bc-hero">';
+  h+='<div class="bc-hero-num">'+total+'</div>';
+  h+='<div class="bc-hero-label">Pint Counter</div>';
+  h+='<div class="bc-hero-stats">';
+  h+='<div class="bc-hs"><div class="bc-hs-n">'+stats.avg+'</div><div class="bc-hs-l">media/giorno</div></div>';
+  h+='<div class="bc-hs"><div class="bc-hs-n">'+stats.pubCount+'</div><div class="bc-hs-l">pub visitati</div></div>';
+  if(stats.topPub)h+='<div class="bc-hs"><div class="bc-hs-n">\u{1F947}</div><div class="bc-hs-l">'+stats.topPub+'</div></div>';
+  h+='</div></div>';
+  
   h+=renderBeerCounter();
+  h+='</div>';
   document.getElementById("beerw").innerHTML=h;
 }
 
@@ -817,41 +830,31 @@ function getAchievements(){
 
 function renderBeerCounter(){
   var beers=loadBeers();
-  var stats=getBeerStats();
   var achs=getAchievements();
-  var h="";
-
-  // Stats row
-  if(stats.total>0){
-    h+='<div class="bc-stats">';
-    h+='<div class="bc-stat"><div class="bc-stat-n">'+stats.avg+'</div><div class="bc-stat-l">media/giorno</div></div>';
-    h+='<div class="bc-stat"><div class="bc-stat-n">'+stats.pubCount+'</div><div class="bc-stat-l">pub visitati</div></div>';
-    if(stats.topPub)h+='<div class="bc-stat"><div class="bc-stat-n">\ud83e\udd47</div><div class="bc-stat-l">'+stats.topPub+'</div></div>';
-    h+='</div>';
-  }
-
+  var h='';
+  
   // Achievements
-  if(achs.length>0){
-    h+='<div class="bc-section">Achievements</div>';
-    h+='<div class="bc-achs">';
+  if(achs.length>0||true){
+    h+='<div class="bc-card"><div class="bc-card-hdr">ACHIEVEMENTS</div><div class="bc-achs">';
     achs.forEach(function(a){
       h+='<div class="bc-ach"><span class="bc-ach-ico">'+a.icon+'</span><div><div class="bc-ach-name">'+a.name+'</div><div class="bc-ach-desc">'+a.desc+'</div></div></div>';
     });
     h+='</div>';
-  }
-
-  // Locked achievements
-  var possibleTotal=[1,5,10,20];var possiblePubs=[3,5,8];var locked=[];
-  possibleTotal.forEach(function(n){if(stats.total<n)locked.push({need:n+" pinte",icon:"\ud83d\udd12"})});
-  possiblePubs.forEach(function(n){if(stats.pubCount<n)locked.push({need:n+" pub",icon:"\ud83d\udd12"})});
-  if(locked.length>0&&locked.length<=4){
-    h+='<div class="bc-locked">';
-    locked.forEach(function(l){h+='<span class="bc-lock">'+l.icon+" "+l.need+'</span>'});
+    // Locked
+    var possibleTotal=[1,5,10,20];var possiblePubs=[3,5,8];var locked=[];
+    var stats=getBeerStats();
+    possibleTotal.forEach(function(n){if(stats.total<n)locked.push(n+" pinte")});
+    possiblePubs.forEach(function(n){if(stats.pubCount<n)locked.push(n+" pub")});
+    if(locked.length>0){
+      h+='<div class="bc-locked">';
+      locked.forEach(function(l){h+='<span class="bc-lock">\u{1F512} '+l+'</span>'});
+      h+='</div>';
+    }
     h+='</div>';
   }
-
-  // Beer Passport - flat unique list
-  h+='<div class="bc-section">Beer Passport</div>';
+  
+  // Beer Passport
+  h+='<div class="bc-card"><div class="bc-card-hdr">BEER PASSPORT</div>';
   var seen={};
   LIVE_DAYS.forEach(function(d){
     allItems(d).forEach(function(s){
@@ -859,17 +862,17 @@ function renderBeerCounter(){
         seen[s.n]=true;
         var cnt=beers[s.n]||0;
         var visited=cnt>0;
-        h+='<div class="bp-card'+(visited?" visited":"")+'">';
-        h+='<div class="bp-stamp">'+(visited?"\u2705":"\u2b1c")+'</div>';
+        h+='<div class="bp-row'+(visited?' bp-visited':'')+'">';
+        h+='<div class="bp-check">'+(visited?'\u2705':'\u2b1c')+'</div>';
         h+='<div class="bp-info"><div class="bp-name">'+s.n+'</div>';
         if(s.ad)h+='<div class="bp-addr">'+s.ad+'</div>';
-        if(s.ds)h+='<div class="bp-desc">'+s.ds+'</div>';
         h+='</div>';
-        h+='<div class="bp-counter"><button class="beer-minus" onclick="event.stopPropagation();removeBeer(\u0027'+s.n.replace(/'/g,"\u2019")+'\u0027)">-</button><span class="beer-count">'+cnt+'</span><button class="beer-plus" onclick="event.stopPropagation();addBeer(\u0027'+s.n.replace(/'/g,"\u2019")+'\u0027)">+</button></div>';
+        h+='<div class="bp-ctr"><button class="bp-btn" onclick="event.stopPropagation();removeBeer(\''+s.n.replace(/'/g,"\u2019")+'\')">-</button><span class="bp-cnt">'+cnt+'</span><button class="bp-btn" onclick="event.stopPropagation();addBeer(\''+s.n.replace(/'/g,"\u2019")+'\')">+</button></div>';
         h+='</div>';
       }
     });
   });
+  h+='</div>';
   return h;
 }
 
@@ -1316,24 +1319,58 @@ function goTo(di,t){
 }
 
 function fetchTfl(){
-  var el=document.getElementById("tfl-status");el.innerHTML='<div class="emp">Caricamento...</div>';
   var lines=["bakerloo","central","circle","district","hammersmith-city","jubilee","metropolitan","northern","piccadilly","victoria","waterloo-city","dlr","elizabeth","london-overground","tram"];
-  fetch("https://api.tfl.gov.uk/Line/"+lines.join(",")+"/Status")
+  var colors={"bakerloo":"#B36305","central":"#DC241F","circle":"#FFD329","district":"#00782A","hammersmith-city":"#F3A9BB","jubilee":"#A0A5A9","metropolitan":"#9B0056","northern":"#000000","piccadilly":"#003688","victoria":"#0098D4","waterloo-city":"#95CDBA","dlr":"#00A4A7","elizabeth":"#6950A1","london-overground":"#E86A10","tram":"#84B817"};
+  var names={"hammersmith-city":"H&C","london-overground":"Overground","waterloo-city":"W&City"};
+  
+  fetch(CONFIG.tflUrl+"/"+lines.join(",")+"/Status")
   .then(function(r){return r.json()})
-  .then(function(d){
-    var h="";d.forEach(function(l){
-      var st=l.lineStatuses[0];var sev=st.statusSeverity;
-      var cls=sev===10?"tfl-ok":sev>=5?"tfl-warn":"tfl-bad";
-      h+='<div class="tfl-row"><span class="tfl-ln">'+l.name+'</span><span class="tfl-st '+cls+'">'+st.statusSeverityDescription+'</span></div>';
+  .then(function(data){
+    var ok=0,warn=0,bad=0;
+    var h='';
+    data.forEach(function(l,i){
+      var st=l.lineStatuses&&l.lineStatuses[0]?l.lineStatuses[0]:{};
+      var sev=st.statusSeverity||0;
+      var desc=st.statusSeverityDescription||"Unknown";
+      var reason=st.reason||"";
+      var cls,badge,badgeBg;
+      if(sev===10||sev===1){cls="ok";badge="Regolare";badgeBg="var(--oks)";ok++}
+      else if(sev>=5){cls="warn";badge=desc;badgeBg="var(--wrns)";warn++}
+      else{cls="bad";badge=desc;badgeBg="var(--errs)";bad++}
+      var lName=names[l.id]||l.name;
+      var lColor=colors[l.id]||"#888";
+      var hasDetail=reason&&cls!=="ok";
+      
+      h+='<div class="tr-row'+(hasDetail?' tr-expandable':'')+'" onclick="'+(hasDetail?'this.classList.toggle(\'open\')':'')+'">';
+      h+='<div class="tr-row-main">';
+      h+='<div class="tr-line-ico" style="background:'+lColor+'"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="2" y="8" width="16" height="4" rx="1" fill="#fff"/></svg></div>';
+      h+='<div class="tr-line-name">'+lName+'</div>';
+      h+='<div class="tr-badge tr-'+cls+'" style="background:'+badgeBg+'">'+badge+'</div>';
+      h+='</div>';
+      if(hasDetail)h+='<div class="tr-detail">'+reason.replace(/'/g,"&#39;")+'</div>';
+      h+='</div>';
     });
-    h+='<div style="font-size:11px;color:var(--tx3);margin-top:6px">\u{1F4E1} TfL API \u2022 '+new Date().toLocaleString("it-IT")+'</div>';
-    el.innerHTML=h;
+    
+    document.getElementById("tr-list").innerHTML=h;
+    document.getElementById("tr-stats").innerHTML='<div class="tr-stat"><div class="tr-stat-n" style="color:var(--ok)">'+ok+'</div><div class="tr-stat-l">attive</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--wrn)">'+warn+'</div><div class="tr-stat-l">rallentate</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--err)">'+bad+'</div><div class="tr-stat-l">sospese</div></div>';
+    document.getElementById("tr-footer").textContent="TfL API \u2022 "+new Date().toLocaleString("it-IT");
   })
-  .catch(function(){el.innerHTML='<div class="emp">Errore connessione TfL</div>'});
+  .catch(function(e){
+    document.getElementById("tr-list").innerHTML='<div style="padding:20px;text-align:center;color:var(--err)">\u274c '+e.message+'</div>';
+  });
 }
 
 function renderTr(){
-  document.getElementById("trw").innerHTML='<div class="ic"><h3>\u{1F687} Stato linee live</h3><div id="tfl-status"><div class="emp">Premi aggiorna</div></div><button class="wlb" onclick="fetchTfl()">\u{1F504} Aggiorna da TfL</button></div><div class="ic"><h3>\u26a0 Chiusure note</h3><ul><li>\u{1F7E2} <b>Sciopero</b><div class="li-desc">Annullato</div></li><li>\u26a0\ufe0f <b>Metropolitan (sab-dom)</b><div class="li-desc">Chiusa Aldgate \u2192 Wembley Park</div></li><li>\u26a0\ufe0f <b>DLR (sab-dom)</b><div class="li-desc">Chiusa Bank \u2192 Canning Town</div></li><li>\u26a0\ufe0f <b>Northern (tutta sett.)</b><div class="li-desc">No treni Camden\u2192Kennington via Bank dopo 22</div></li><li>\u{1F7E2} <b>Lun-Mar</b><div class="li-desc">Nessuna chiusura</div></li></ul></div><div class="ic"><h3>\u{1F4A1} Tips trasporti</h3><ul><li>\u{1F4B3} <b>Contactless/Oyster</b><div class="li-desc">Appoggiare la carta ai tornelli</div></li><li>\u{1F4F1} <b>Citymapper</b><div class="li-desc">App consigliata per navigare</div></li><li>\u{1F4B0} <b>Cap ~\u00a38.10</b><div class="li-desc">Massimo giornaliero zone 1-2</div></li><li>\u{1F682} <b>Stansted Express \u00a319.40</b><div class="li-desc">Ogni 15 min, ~50 min</div></li><li>\u{1F550} <b>Cambio ora sab notte</b><div class="li-desc">02:00 \u2192 03:00</div></li></ul></div>';
+  var h='<div class="tr-wrap">';
+  h+='<div class="tr-hero" id="tr-hero">';
+  h+='<div class="wt-refresh" onclick="fetchTfl()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 2.5v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 8a6 6 0 0111.5-2.5L13.5 6.5M2.5 13.5v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8a6 6 0 01-11.5 2.5L2.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+  h+='<div class="tr-hero-title">TfL Londra</div>';
+  h+='<div class="tr-hero-stats" id="tr-stats"><div class="tr-stat"><div class="tr-stat-n" style="color:var(--ok)">--</div><div class="tr-stat-l">attive</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--wrn)">--</div><div class="tr-stat-l">rallentate</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--err)">--</div><div class="tr-stat-l">sospese</div></div></div>';
+  h+='</div>';
+  h+='<div class="tr-list" id="tr-list"><div style="padding:20px;text-align:center;color:var(--tx3)">Caricamento...</div></div>';
+  h+='<div class="tr-footer" id="tr-footer"></div>';
+  h+='</div>';
+  document.getElementById("trw").innerHTML=h;
 }
 
 function renderMt(){
@@ -1470,13 +1507,59 @@ function fetchW(){
 
 function refreshInfo(){renderIf()}
 function renderIf(){
-  var h='<div class="ic"><h3>\u{1F4B1} Convertitore EUR/GBP</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="number" class="ed-input" id="fx-input" placeholder="Importo" style="width:100px;flex:none" oninput="convertCurrency()"><select class="ed-input" id="fx-dir" style="width:auto;flex:none" onchange="convertCurrency()"><option value="eur2gbp">EUR \u2192 GBP</option><option value="gbp2eur">GBP \u2192 EUR</option></select><div id="fx-output" style="font-size:20px;font-weight:700;color:var(--pub)">0.00 GBP</div></div><div id="fx-rate" style="font-size:11px;color:var(--tx3);margin-top:6px">1 EUR = '+(typeof EUR_GBP_RATE!=='undefined'?EUR_GBP_RATE:0.86).toFixed(4)+' GBP</div></div>';
-    
-  h+='<div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div>';
-  h+='<div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div>';
-  h+='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div>';
-  h+='<div class="foot">London App - Mar 2026 \u{1F408}\u200d\u2b1b</div>';
+  var h='<div class="if-wrap">';
   
+  // Converter
+  h+='<div class="if-card"><div class="if-card-hdr">CONVERTITORE</div>';
+  h+='<div class="fx-row"><input type="number" class="fx-input" id="fx-input" placeholder="EUR" oninput="convertCurrency()"><div class="fx-swap" onclick="var d=document.getElementById(\'fx-dir\');d.value=d.value===\'eur2gbp\'?\'gbp2eur\':\'eur2gbp\';convertCurrency()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4-4 4 4M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><select class="fx-sel" id="fx-dir" onchange="convertCurrency()" style="display:none"><option value="eur2gbp">e2g</option><option value="gbp2eur">g2e</option></select><div class="fx-out" id="fx-output">0.00 GBP</div></div>';
+  h+='<div class="fx-rate" id="fx-rate">1 EUR = '+(typeof EUR_GBP_RATE!=="undefined"?EUR_GBP_RATE:0.86).toFixed(4)+' GBP</div>';
+  h+='</div>';
+  
+  // Numeri utili
+  h+='<div class="if-card"><div class="if-card-hdr">NUMERI UTILI</div>';
+  var nums=[
+    {ico:"\u{1F198}",bg:"var(--errs)",n:"999 / 112",d:"Emergenze"},
+    {ico:"\u{1F3E5}",bg:"var(--accs)",n:"111",d:"NHS, consulenza medica"},
+    {ico:"\u{1F1EE}\u{1F1F9}",bg:"var(--oks)",n:"+44 20 7312 2200",d:"Ambasciata italiana"},
+    {ico:"\u{1F687}",bg:"var(--accs)",n:"0343 222 1234",d:"TfL trasporti"},
+    {ico:"\u{1F3E8}",bg:"var(--wrns)",n:"+44 20 7456 0400",d:"Hotel Point A"}
+  ];
+  nums.forEach(function(n,i){
+    h+='<div class="if-row'+(i<nums.length-1?' if-brd':'')+'">';
+    h+='<div class="if-ico" style="background:'+n.bg+'">'+n.ico+'</div>';
+    h+='<div class="if-info"><div class="if-info-n">'+n.n+'</div><div class="if-info-d">'+n.d+'</div></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  
+  // Consigli
+  h+='<div class="if-card"><div class="if-card-hdr">CONSIGLI</div>';
+  var tips=[
+    {ico:"\u{1F697}",n:"Si guida a sinistra!",d:"Guardate prima a destra"},
+    {ico:"\u{1F4B0}",n:"Mancia 10%",d:"Apprezzata, non obbligatoria"},
+    {ico:"\u{1F50C}",n:"Prese UK tipo G",d:"Serve adattatore 3 pin"},
+    {ico:"\u{1F4A7}",n:"Acqua rubinetto OK",d:"Potabile, riempite le borracce"},
+    {ico:"\u{1F37A}",n:"Orari pub",d:"~23 settimana, ~00 weekend"},
+    {ico:"\u{1F4B3}",n:"Contactless ovunque",d:"Anche importi piccoli"},
+    {ico:"\u{1F45C}",n:"Sicurezza metro",d:"Occhio a borse nelle ore di punta"}
+  ];
+  tips.forEach(function(t,i){
+    h+='<div class="if-tip'+(i<tips.length-1?' if-brd':'')+'">';
+    h+='<span class="if-tip-ico">'+t.ico+'</span>';
+    h+='<div><div class="if-tip-n">'+t.n+'</div><div class="if-tip-d">'+t.d+'</div></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  
+  // Legenda
+  h+='<div class="if-card"><div class="if-card-hdr">LEGENDA TIMELINE</div>';
+  h+='<div class="if-leg">';
+  var legs=[["var(--pub)","Pub"],["var(--food)","Cibo"],["var(--attr)","Attrazione"],["var(--mkt)","Mercato"],["var(--trn)","Trasporto"],["var(--fot)","Foto"]];
+  legs.forEach(function(l){h+='<div class="if-leg-i"><div class="if-leg-d" style="background:'+l[0]+'"></div>'+l[1]+'</div>'});
+  h+='</div></div>';
+  
+  h+='<div class="if-footer">London App v'+CONFIG.version+' \u{1F408}\u200d\u2b1b</div>';
+  h+='</div>';
   document.getElementById("ifw").innerHTML=h;
 }
 
