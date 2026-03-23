@@ -1316,6 +1316,17 @@ function filterCat(cat){
   r.innerHTML=h;
 }
 
+
+function openCitymapper(dayIdx,stopIdx){
+  var all=allItems(LIVE_DAYS[dayIdx]);
+  var s=all[stopIdx];
+  if(!s||!s.la)return;
+  var params="endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n);
+  if(s.ad)params+="&endaddress="+encodeURIComponent(s.ad);
+  // Try web URL first (triggers app via Universal/App Links on mobile)
+  window.open("https://citymapper.com/directions?"+params,"_blank");
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -1467,8 +1478,8 @@ function renderDay(i){
       var tgs=s.ws.map(function(w){return '<span class="tg tg-'+(w.y==="a"?"a":w.y==="b"?"b":"i")+'">'+w.x+'</span>'}).join("");
       var nt=localStorage.getItem("nt-"+i+"-"+gi)||"";
       var isSkip=localStorage.getItem("sk-"+i+"-"+gi)==="1";
-      var cmLink="";
-      if(s.la)cmLink="citymapper://directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+(s.ad?"&endaddress="+encodeURIComponent(s.ad):"");
+      
+      var hasCm=s.la?true:false;
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
@@ -1490,7 +1501,7 @@ function renderDay(i){
       if(s.di)h+='<div class="sdb"><div class="sdl">\u{1F5FA} Come arrivarci</div><div class="sdtx">'+s.di+'</div></div>';
       if(s.ad)h+='<div class="sdb"><div class="sdl">\u{1F4CD} '+s.ad+'</div></div>';
       h+='<div class="sdlk">';
-      if(cmLink)h+='<a class="btn-ico" href="'+cmLink+'" target="_blank" title="Citymapper">'+ICN.citymapper+'</a>';
+      if(hasCm)h+='<a class="btn-ico" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();openCitymapper('+i+','+gi+')" title="Citymapper">'+ICN.citymapper+'</a>';
       if(s.la)h+='<a class="btn-ico" href="https://www.google.com/maps/dir/?api=1&destination='+s.la+','+s.ln+'&travelmode=walking" target="_blank" title="Google Maps">'+ICN.gmaps+'</a>';
       h+='<a class="btn-ico" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showPhrasesIdx('+i+','+gi+')" title="Frasi utili">'+ICN.phrases+'</a>';
       h+=diaryInfo.html;
