@@ -49,7 +49,7 @@ function checkPin(){
 initLock();
 
 
-if(localStorage.getItem('th')==='l')document.documentElement.classList.add('light');
+if(localStorage.getItem('th')!=='d')document.documentElement.classList.add('light');
 
 var TC={'Pub/Birra':'pub','Cibo':'cibo','Attrazione':'attr','Mercato':'mkt','Trasporto':'trans','Passeggiata':'attr','Hotel':'hotel','Panorama':'attr','Foto':'foto','Shopping':'shop'};
 var TI={'Pub/Birra':'\u{1F37A}','Cibo':'\u{1F37D}','Attrazione':'\u{1F3DB}','Mercato':'\u{1F6CD}','Trasporto':'\u{1F687}','Passeggiata':'\u{1F3DB}','Hotel':'\u{1F3E8}','Panorama':'\u{1F3DB}','Foto':'\u{1F4F8}','Shopping':'\u{1F6D2}'};
@@ -1053,6 +1053,56 @@ function showGuide(){
   overlay.classList.add("open");
 }
 
+
+/* --- Swipe between tabs --- */
+var TAB_ORDER=["p1","p2","p3","p4","p6","p5"];
+var swipeStartX=0,swipeStartY=0,swipeTab=null;
+
+function initSwipeTabs(){
+  var shell=document.querySelector(".shell");
+  if(!shell)return;
+  shell.addEventListener("touchstart",function(e){
+    swipeStartX=e.touches[0].clientX;
+    swipeStartY=e.touches[0].clientY;
+    // Find which tab is active
+    var active=document.querySelector(".pg.on");
+    swipeTab=active?active.id:null;
+  },{passive:true});
+  
+  shell.addEventListener("touchend",function(e){
+    if(!swipeTab)return;
+    // Skip swipe on Piano tab (it uses swipe for days)
+    if(swipeTab==="p1")return;
+    
+    var dx=e.changedTouches[0].clientX-swipeStartX;
+    var dy=e.changedTouches[0].clientY-swipeStartY;
+    // Must be horizontal swipe (dx > dy) and long enough
+    if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx)*0.7)return;
+    
+    var idx=TAB_ORDER.indexOf(swipeTab);
+    if(idx<0)return;
+    
+    if(dx<0&&idx<TAB_ORDER.length-1){
+      // Swipe left = next tab
+      switchToTab(TAB_ORDER[idx+1]);
+    }else if(dx>0&&idx>0){
+      // Swipe right = prev tab
+      switchToTab(TAB_ORDER[idx-1]);
+    }
+  },{passive:true});
+}
+
+function switchToTab(tabId){
+  document.querySelectorAll(".pg").forEach(function(p){p.classList.remove("on")});
+  document.querySelectorAll(".nav button").forEach(function(b){b.classList.remove("on")});
+  var pg=document.getElementById(tabId);
+  if(pg)pg.classList.add("on");
+  document.querySelectorAll(".nav button").forEach(function(b){
+    if(b.dataset.p===tabId)b.classList.add("on");
+  });
+  updateHeader(tabId);
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -1089,6 +1139,7 @@ renderDay(0);renderSearch();renderTr();renderMt();renderIf();renderBeerPage();
   el.addEventListener("touchstart",function(e){tsX=e.touches[0].clientX},{passive:true});
   el.addEventListener("touchend",function(e){var d=tsX-e.changedTouches[0].clientX;if(Math.abs(d)>60){if(d>0&&cD<DAYS.length-1)selDay(cD+1);if(d<0&&cD>0)selDay(cD-1)}},{passive:true});
   setTimeout(initMap,300);
+  initSwipeTabs();
   setTimeout(fetchWeatherAuto,500);
   setTimeout(fetchTfl,1000);
   setTimeout(fetchExchangeRate,1500);
@@ -1172,7 +1223,7 @@ function renderDay(i){
       var nt=localStorage.getItem("nt-"+i+"-"+gi)||"";
       var isSkip=localStorage.getItem("sk-"+i+"-"+gi)==="1";
       var cmLink="";
-      if(s.la)cmLink="https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n);
+      if(s.la)cmLink="https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+"&endaddress="+encodeURIComponent(s.ad||s.n);
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
