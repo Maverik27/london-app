@@ -402,3 +402,10 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
 /* Locked achievements */
 .bc-ach-locked{opacity:.4;filter:grayscale(1)}
+
+/* Beer fun stats */
+.bc-fun-stats{padding:0 14px 14px}
+.bc-fs-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--brd);font-size:13px}
+.bc-fs-row:last-child{border:none}
+.bc-fs-label{color:var(--tx2)}
+.bc-fs-val{font-weight:600}

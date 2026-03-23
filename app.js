@@ -817,6 +817,29 @@ function removeBeer(pubName){
   }
 }
 
+function getAllPubs(){
+  var beers=loadBeers();
+  var pubs=[];
+  var seen={};
+  // First: all pubs from itinerary
+  LIVE_DAYS.forEach(function(d){
+    allItems(d).forEach(function(s){
+      if(s.tp==="Pub/Birra"&&!seen[s.n]){
+        seen[s.n]=true;
+        pubs.push({name:s.n,addr:s.ad||""});
+      }
+    });
+  });
+  // Then: any tracked pub not in itinerary (was removed or added externally)
+  for(var k in beers){
+    if(!seen[k]){
+      seen[k]=true;
+      pubs.push({name:k,addr:""});
+    }
+  }
+  return pubs;
+}
+
 function getBeerStats(){
   var beers=loadBeers();
   var total=0,topPub="",topCount=0,pubCount=0;
@@ -825,7 +848,7 @@ function getBeerStats(){
     pubCount++;
     if(beers[k]>topCount){topCount=beers[k];topPub=k}
   }
-  // Pubs per day (count days with at least 1 beer)
+  var totalPubs=getAllPubs().length;
   var daysWithBeer=0;
   LIVE_DAYS.forEach(function(d){
     var hasBeer=false;
@@ -835,48 +858,36 @@ function getBeerStats(){
     if(hasBeer)daysWithBeer++;
   });
   var avg=daysWithBeer>0?(total/daysWithBeer).toFixed(1):"0";
-  return {total:total,topPub:topPub,topCount:topCount,pubCount:pubCount,avg:avg,daysWithBeer:daysWithBeer};
+  var achs=getAchievements();
+  var unlockedAchs=achs.filter(function(a){return a.unlocked}).length;
+  return {total:total,topPub:topPub,topCount:topCount,pubCount:pubCount,totalPubs:totalPubs,avg:avg,daysWithBeer:daysWithBeer,unlockedAchs:unlockedAchs};
 }
 
 function getAchievements(){
   var beers=loadBeers();
   var total=0;for(var k in beers)total+=beers[k];
   var pubCount=Object.keys(beers).length;
-  
-  // Count total pubs in itinerary
-  var totalPubs=0;var seen={};
-  LIVE_DAYS.forEach(function(d){allItems(d).forEach(function(s){if(s.tp==="Pub/Birra"&&!seen[s.n]){seen[s.n]=true;totalPubs++}})});
-  
-  // Per-pub max
   var maxPerPub=0;
   for(var k in beers){if(beers[k]>maxPerPub)maxPerPub=beers[k]}
-  
-  // Guinness pubs
   var gpubs=0;
   for(var k in beers){
     var kl=k.toLowerCase();
     if(kl.indexOf("guinness")>=0||kl.indexOf("toucan")>=0||kl.indexOf("devonshire")>=0||kl.indexOf("grocer")>=0||kl.indexOf("dublin")>=0)gpubs++;
   }
-  
-  var all=[
-    {icon:"\u{1F37A}",name:"First Pint",desc:"La prima pinta del viaggio",unlocked:total>=1},
+  return [
+    {icon:"\u{1F37A}",name:"First Pint",desc:"1 pinta bevuta",unlocked:total>=1},
     {icon:"\u{1F37B}",name:"Warming Up",desc:"10 pinte bevute",unlocked:total>=10},
     {icon:"\u{1F3C5}",name:"Session Pro",desc:"20 pinte bevute",unlocked:total>=20},
     {icon:"\u{1F3C6}",name:"Marathon Drinker",desc:"30 pinte bevute",unlocked:total>=30},
     {icon:"\u{1F451}",name:"Pub Royalty",desc:"50 pinte bevute",unlocked:total>=50},
-    {icon:"\u{1F48E}",name:"Diamond Liver",desc:"75 pinte bevute",unlocked:total>=75},
-    {icon:"\u{1F30D}",name:"Centurion",desc:"100 pinte! Leggenda.",unlocked:total>=100},
+    {icon:"\u{1F48E}",name:"Centurion",desc:"100 pinte bevute",unlocked:total>=100},
     {icon:"\u{1F463}",name:"Pub Hopper",desc:"3 pub diversi",unlocked:pubCount>=3},
     {icon:"\u{1F5FA}",name:"Explorer",desc:"6 pub diversi",unlocked:pubCount>=6},
     {icon:"\u{1F9ED}",name:"Pub Crawler",desc:"10 pub diversi",unlocked:pubCount>=10},
-    {icon:"\u2B50",name:"Master Crawler",desc:"15+ pub diversi",unlocked:pubCount>=15},
-    {icon:"\u{1F3A9}",name:"Hat Trick x5",desc:"5+ pinte in un pub",unlocked:maxPerPub>=5},
-    {icon:"\u{1F3E0}",name:"Local",desc:"10+ pinte in un pub",unlocked:maxPerPub>=10},
-    {icon:"\u{1F1EE}\u{1F1EA}",name:"Irish Soul",desc:"2+ Guinness pubs",unlocked:gpubs>=2},
-    {icon:"\u2618\ufe0f",name:"Guinness Master",desc:"4+ Guinness pubs",unlocked:gpubs>=4},
-    {icon:"\u{1F3C1}",name:"Completionist",desc:"Tutti i "+totalPubs+" pub!",unlocked:pubCount>=totalPubs&&totalPubs>0}
+    {icon:"\u{1F3A9}",name:"Hat Trick",desc:"5+ pinte in un pub",unlocked:maxPerPub>=5},
+    {icon:"\u{1F1EE}\u{1F1EA}",name:"Irish Soul",desc:"3 Guinness pubs",unlocked:gpubs>=3},
+    {icon:"\u2618\ufe0f",name:"Guinness Master",desc:"5 Guinness pubs",unlocked:gpubs>=5}
   ];
-  return all;
 }
 
 function renderBeerCounter(){
@@ -884,35 +895,42 @@ function renderBeerCounter(){
   var achs=getAchievements();
   var h='';
   
-  // Achievements
-  if(achs.length>0||true){
-    h+='<div class="bc-card"><div class="bc-card-hdr">ACHIEVEMENTS</div><div class="bc-achs">';
-    achs.forEach(function(a){
-      h+='<div class="bc-ach'+(a.unlocked?'':' bc-ach-locked')+'"><span class="bc-ach-ico">'+(a.unlocked?a.icon:'\u{1F512}')+'</span><div><div class="bc-ach-name">'+a.name+'</div><div class="bc-ach-desc">'+a.desc+'</div></div></div>';
-    });
-    h+='</div>';
-  }
+  // Achievements - all visible
+  h+='<div class="bc-card"><div class="bc-card-hdr">ACHIEVEMENTS</div><div class="bc-achs">';
+  achs.forEach(function(a){
+    h+='<div class="bc-ach'+(a.unlocked?'':' bc-ach-locked')+'"><span class="bc-ach-ico">'+(a.unlocked?a.icon:'\u{1F512}')+'</span><div><div class="bc-ach-name">'+a.name+'</div><div class="bc-ach-desc">'+a.desc+'</div></div></div>';
+  });
+  h+='</div></div>';
   
-  // Beer Passport
+  // Beer Passport - merge itinerary pubs + any extra tracked pubs
   h+='<div class="bc-card"><div class="bc-card-hdr">BEER PASSPORT</div>';
-  var seen={};
-  LIVE_DAYS.forEach(function(d){
-    allItems(d).forEach(function(s){
-      if(s.tp==="Pub/Birra"&&!seen[s.n]){
-        seen[s.n]=true;
-        var cnt=beers[s.n]||0;
-        var visited=cnt>0;
-        h+='<div class="bp-row'+(visited?' bp-visited':'')+'">';
-        h+='<div class="bp-check">'+(visited?'\u2705':'\u2b1c')+'</div>';
-        h+='<div class="bp-info"><div class="bp-name">'+s.n+'</div>';
-        if(s.ad)h+='<div class="bp-addr">'+s.ad+'</div>';
-        h+='</div>';
-        h+='<div class="bp-ctr"><button class="bp-btn" onclick="event.stopPropagation();removeBeer(\''+s.n.replace(/'/g,"\u2019")+'\')">-</button><span class="bp-cnt">'+cnt+'</span><button class="bp-btn" onclick="event.stopPropagation();addBeer(\''+s.n.replace(/'/g,"\u2019")+'\')">+</button></div>';
-        h+='</div>';
-      }
-    });
+  var pubList=getAllPubs();
+  pubList.forEach(function(p){
+    var cnt=beers[p.name]||0;
+    var visited=cnt>0;
+    h+='<div class="bp-row'+(visited?' bp-visited':'')+'">';
+    h+='<div class="bp-check">'+(visited?'\u2705':'\u2b1c')+'</div>';
+    h+='<div class="bp-info"><div class="bp-name">'+p.name+'</div>';
+    if(p.addr)h+='<div class="bp-addr">'+p.addr+'</div>';
+    h+='</div>';
+    h+='<div class="bp-ctr"><button class="bp-btn" onclick="event.stopPropagation();removeBeer(\u0027'+p.name.replace(/'/g,"\u2019")+'\u0027)">-</button><span class="bp-cnt">'+cnt+'</span><button class="bp-btn" onclick="event.stopPropagation();addBeer(\u0027'+p.name.replace(/'/g,"\u2019")+'\u0027)">+</button></div>';
+    h+='</div>';
   });
   h+='</div>';
+  
+  // Fun stats
+  var stats=getBeerStats();
+  if(stats.total>0){
+    h+='<div class="bc-card"><div class="bc-card-hdr">STATISTICHE</div><div class="bc-fun-stats">';
+    h+='<div class="bc-fs-row"><span class="bc-fs-label">Pinte totali</span><span class="bc-fs-val">'+stats.total+'</span></div>';
+    h+='<div class="bc-fs-row"><span class="bc-fs-label">Pub visitati</span><span class="bc-fs-val">'+stats.pubCount+'/'+stats.totalPubs+'</span></div>';
+    h+='<div class="bc-fs-row"><span class="bc-fs-label">Media per pub</span><span class="bc-fs-val">'+(stats.pubCount>0?(stats.total/stats.pubCount).toFixed(1):"0")+'</span></div>';
+    h+='<div class="bc-fs-row"><span class="bc-fs-label">Media al giorno</span><span class="bc-fs-val">'+stats.avg+'</span></div>';
+    if(stats.topPub)h+='<div class="bc-fs-row"><span class="bc-fs-label">Pub preferito</span><span class="bc-fs-val">'+stats.topPub+' ('+stats.topCount+')</span></div>';
+    h+='<div class="bc-fs-row"><span class="bc-fs-label">Achievement sbloccati</span><span class="bc-fs-val">'+stats.unlockedAchs+'/12</span></div>';
+    h+='</div></div>';
+  }
+  
   return h;
 }
 
