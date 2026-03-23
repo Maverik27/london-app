@@ -588,8 +588,10 @@ function renderDiaryBtn(dayIdx, stopIdx){
   var diary=loadDiary();
   var key=dayIdx+"-"+stopIdx;
   var entries=diary[key]||[];
+  var hasPhoto=entries.some(function(e){return e.photo});
   var badge=entries.length>0?'<span class="diary-badge">'+entries.length+'</span>':"";
-  return '<a class="btn-ico" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showDiary('+dayIdx+','+stopIdx+')" title="Diario">'+ICN.diary+badge+'</a>';
+  var photoTag=hasPhoto?' \u{1F4F7}':'';
+  return {html:'<a class="btn-ico" style="position:relative" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showDiary('+dayIdx+','+stopIdx+')" title="Diario">'+ICN.diary+badge+'</a>', hasEntries:entries.length>0, hasPhoto:hasPhoto};
 }
 
 function showDiary(dayIdx, stopIdx){
@@ -607,9 +609,10 @@ function showDiary(dayIdx, stopIdx){
   
   if(entries.length>0){
     entries.forEach(function(e,i){
-      h+='<div class="diary-entry">';
+      h+='<div class="diary-entry" style="position:relative">';
+      h+='<button class="diary-del" onclick="event.stopPropagation();deleteDiaryEntry('+dayIdx+','+stopIdx+','+i+')">&times;</button>';
       if(e.photo)h+='<img src="'+e.photo+'" class="diary-photo">';
-      h+='<div class="diary-text">'+e.text+'</div>';
+      if(e.text)h+='<div class="diary-text">'+e.text+'</div>';
       h+='<div class="diary-time">'+e.time+'</div>';
       h+='</div>';
     });
@@ -679,6 +682,19 @@ function saveDiaryEntry(dayIdx, stopIdx){
   closeEdit();
   showToast("\ud83d\udcd6 Ricordo salvato!");
   renderDay(cD);
+}
+
+
+function deleteDiaryEntry(dayIdx, stopIdx, entryIdx){
+  var diary=loadDiary();
+  var key=dayIdx+"-"+stopIdx;
+  if(diary[key]&&diary[key][entryIdx]!==undefined){
+    diary[key].splice(entryIdx,1);
+    if(diary[key].length===0)delete diary[key];
+    saveDiary(diary);
+    showDiary(dayIdx,stopIdx);
+    showToast("\u{1F5D1} Ricordo eliminato");
+  }
 }
 
 function exportDiary(){
@@ -870,6 +886,107 @@ function updateHeader(tabId){
   document.getElementById("hdr-ico").src=cfg.icon;
 }
 
+
+/* --- Live weather cache --- */
+var WEATHER_CACHE = null;
+
+function fetchWeatherAuto() {
+  fetch(CONFIG.weatherUrl+"?latitude="+CONFIG.weatherLat+"&longitude="+CONFIG.weatherLng+"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,sunrise,sunset&timezone="+CONFIG.weatherTz+"&start_date="+CONFIG.startDate+"&end_date="+CONFIG.endDate)
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(!d.daily)return;
+    WEATHER_CACHE=d.daily;
+    // Update LIVE_DAYS weather data
+    var lb=["Gio 26","Ven 27","Sab 28","Dom 29","Lun 30","Mar 31"];
+    d.daily.time.forEach(function(t,i){
+      if(i<LIVE_DAYS.length){
+        var mn=Math.round(d.daily.temperature_2m_min[i]);
+        var mx=Math.round(d.daily.temperature_2m_max[i]);
+        var pp=d.daily.precipitation_probability_max[i];
+        LIVE_DAYS[i].wt=mn+"\u00b0/"+mx+"\u00b0C";
+        LIVE_DAYS[i].rn=pp>30?1:0;
+        LIVE_DAYS[i].wind=d.daily.windspeed_10m_max?Math.round(d.daily.windspeed_10m_max[i]):null;
+        LIVE_DAYS[i].sunrise=d.daily.sunrise?d.daily.sunrise[i]:null;
+        LIVE_DAYS[i].sunset=d.daily.sunset?d.daily.sunset[i]:null;
+      }
+    });
+    renderDay(cD);
+    renderMt();
+  })
+  .catch(function(){});
+}
+
+
+function renderQuickView(){
+  var now=new Date();
+  var dayIdx=-1;
+  // Find which day we're on (26-31 Mar 2026)
+  var dates=["2026-03-26","2026-03-27","2026-03-28","2026-03-29","2026-03-30","2026-03-31"];
+  var today=now.toISOString().split("T")[0];
+  for(var i=0;i<dates.length;i++){if(dates[i]===today){dayIdx=i;break}}
+  
+  if(dayIdx<0||dayIdx>=LIVE_DAYS.length)return "";
+  
+  var h=now.getHours(),m=now.getMinutes();
+  var nowMin=h*60+m;
+  var all=allItems(LIVE_DAYS[dayIdx]);
+  var current=null,next=null;
+  
+  for(var j=0;j<all.length;j++){
+    var parts=all[j].t.split(":");
+    var stopMin=parseInt(parts[0])*60+parseInt(parts[1]);
+    if(stopMin<=nowMin)current=all[j];
+    if(stopMin>nowMin&&!next)next=all[j];
+  }
+  
+  if(!current&&!next)return "";
+  
+  var qh='<div class="qv">';
+  if(current){
+    var cl=TC[current.tp]||"hotel";
+    qh+='<div class="qv-now"><span class="qv-label">Adesso</span><span class="qv-name">'+current.n+'</span></div>';
+  }
+  if(next){
+    var parts=next.t.split(":");
+    var nextMin=parseInt(parts[0])*60+parseInt(parts[1]);
+    var diff=nextMin-nowMin;
+    if(diff>0&&diff<=120){
+      qh+='<div class="qv-next"><span class="qv-label">Tra '+diff+' min</span><span class="qv-name">'+next.n+'</span></div>';
+    }
+  }
+  qh+='</div>';
+  return qh;
+}
+
+
+var EUR_GBP_RATE = 0.86;
+
+function fetchExchangeRate(){
+  fetch("https://api.exchangerate-api.com/v4/latest/EUR")
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(d.rates&&d.rates.GBP){
+      EUR_GBP_RATE=d.rates.GBP;
+      var el=document.getElementById("fx-rate");
+      if(el)el.textContent="1 EUR = "+EUR_GBP_RATE.toFixed(4)+" GBP";
+    }
+  })
+  .catch(function(){});
+}
+
+function convertCurrency(){
+  var inp=document.getElementById("fx-input");
+  var out=document.getElementById("fx-output");
+  var dir=document.getElementById("fx-dir");
+  if(!inp||!out)return;
+  var val=parseFloat(inp.value)||0;
+  if(dir&&dir.value==="gbp2eur"){
+    out.textContent=(val/EUR_GBP_RATE).toFixed(2)+" EUR";
+  }else{
+    out.textContent=(val*EUR_GBP_RATE).toFixed(2)+" GBP";
+  }
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -906,6 +1023,9 @@ renderDay(0);renderSearch();renderTr();renderMt();renderIf();renderBeerPage();
   el.addEventListener("touchstart",function(e){tsX=e.touches[0].clientX},{passive:true});
   el.addEventListener("touchend",function(e){var d=tsX-e.changedTouches[0].clientX;if(Math.abs(d)>60){if(d>0&&cD<DAYS.length-1)selDay(cD+1);if(d<0&&cD>0)selDay(cD-1)}},{passive:true});
   setTimeout(initMap,300);
+  setTimeout(fetchWeatherAuto,500);
+  setTimeout(fetchTfl,1000);
+  setTimeout(fetchExchangeRate,1500);
   setInterval(updateTimers,60000);
 }
 
@@ -965,7 +1085,7 @@ function renderDay(i){
   var skipped=all.filter(function(_,si){return localStorage.getItem("sk-"+i+"-"+si)==="1"}).length;
   document.getElementById("pbar").style.width=(all.length?Math.round(skipped/all.length*100):0)+"%";
 
-  var h='<div class="dhc"><div class="dhc-t">'+d.t+'</div><div class="dhc-chips"><span class="chip chip-w">'+d.wt+'</span><span class="chip '+(d.rn?"chip-r":"chip-s")+'">'+(d.rn?"\u{1F327} Pioggia":"\u2600\ufe0f Sole")+'</span></div><div class="dhc-dress">'+d.dr+'</div>'+(d.wn?'<div class="dhc-wrn">'+d.wn+'</div>':'')+'<div class="dhc-stats"><span><b>'+all.length+'</b> tappe</span><span><b>'+pb+'</b> \u{1F37A}</span><span><b>'+fb+'</b> \u{1F37D}</span><span>~<b>'+d.km+'</b> km</span></div></div>';
+  var h=renderQuickView()+'<div class="dhc"><div class="dhc-t">'+d.t+'</div><div class="dhc-chips"><span class="chip chip-w">'+d.wt+'</span><span class="chip '+(d.rn?"chip-r":"chip-s")+'">'+(d.rn?"\u{1F327} Pioggia":"\u2600\ufe0f Sole")+'</span>'+(d.sunrise?'<span class="chip chip-w">\u{1F305} '+d.sunrise.split("T")[1].substring(0,5)+'</span>':'')+(d.sunset?'<span class="chip chip-w">\u{1F307} '+d.sunset.split("T")[1].substring(0,5)+'</span>':'')+'</span></div><div class="dhc-dress">'+d.dr+'</div>'+(d.wn?'<div class="dhc-wrn">'+d.wn+'</div>':'')+'<div class="dhc-stats"><span><b>'+all.length+'</b> tappe</span><span><b>'+pb+'</b> \u{1F37A}</span><span><b>'+fb+'</b> \u{1F37D}</span><span>~<b>'+d.km+'</b> km</span></div></div>';
 
   h+='<div class="tl">';
   var gi=0;
@@ -986,7 +1106,7 @@ function renderDay(i){
       var nt=localStorage.getItem("nt-"+i+"-"+gi)||"";
       var isSkip=localStorage.getItem("sk-"+i+"-"+gi)==="1";
       var cmLink="";
-      if(s.pla&&s.la)cmLink="https://citymapper.com/directions?startcoord="+s.pla+","+s.pln+"&endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n);
+      if(s.la)cmLink="https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n);
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
@@ -1008,7 +1128,7 @@ function renderDay(i){
       if(cmLink)h+='<a class="btn-ico" href="'+cmLink+'" target="_blank" title="Citymapper">'+ICN.citymapper+'</a>';
       if(s.la)h+='<a class="btn-ico" href="https://www.google.com/maps/dir/?api=1&destination='+s.la+','+s.ln+'&travelmode=walking" target="_blank" title="Google Maps">'+ICN.gmaps+'</a>';
       h+='<a class="btn-ico" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showPhrasesIdx('+i+','+gi+')" title="Frasi utili">'+ICN.phrases+'</a>';
-      h+=renderDiaryBtn(i,gi);
+      h+=diaryInfo.html;
       if(s.bk)h+='<a class="btn-book" href="'+s.bk.u+'" target="_blank">'+ICN.book+' '+s.bk.l+'</a>';
       if(s.la){h+='<a class="btn-ico" href="https://www.google.com/maps/search/toilet+near+'+s.la+','+s.ln+'" target="_blank" title="Bagno">'+ICN.wc+'</a>';
       h+='<a class="btn-ico" href="https://www.google.com/maps/search/drinking+fountain+near+'+s.la+','+s.ln+'" target="_blank" title="Fontanella">'+ICN.water+'</a>'}
@@ -1074,7 +1194,7 @@ function goTo(di,t){
 
 function fetchTfl(){
   var el=document.getElementById("tfl-status");el.innerHTML='<div class="emp">Caricamento...</div>';
-  var lines=["circle","district","central","northern","jubilee","hammersmith-city","dlr","elizabeth"];
+  var lines=["bakerloo","central","circle","district","hammersmith-city","jubilee","metropolitan","northern","piccadilly","victoria","waterloo-city","dlr","elizabeth","london-overground","tram"];
   fetch("https://api.tfl.gov.uk/Line/"+lines.join(",")+"/Status")
   .then(function(r){return r.json()})
   .then(function(d){
@@ -1094,7 +1214,7 @@ function renderTr(){
 }
 
 function renderMt(){
-  document.getElementById("mtw").innerHTML='<div class="ic"><h3>\u2600\ufe0f Meteo</h3><div id="mt-data"><div class="mt-grid"><div class="mt-hdr">Giorno</div><div class="mt-hdr">Temp</div><div class="mt-hdr">Pioggia</div><div class="mt-hdr">Vento</div>'+DAYS.map(function(d){return '<div class="mt-cell mt-day">'+(d.rn?"\u{1F327}":"\u2600\ufe0f")+" "+d.pl+'</div><div class="mt-cell">'+d.wt+'</div><div class="mt-cell">'+(d.rn?"probabile":"basso")+'</div><div class="mt-cell">--</div>'}).join("")+'</div></div><button class="wlb" onclick="fetchW()">\u{1F504} Aggiorna live</button><div id="wl" style="margin-top:8px;font-size:12px;color:var(--tx2)"></div></div>';
+  document.getElementById("mtw").innerHTML='<div class="ic"><h3>\u2600\ufe0f Meteo</h3><div id="mt-data"><div class="mt-grid"><div class="mt-hdr">Giorno</div><div class="mt-hdr">Temp</div><div class="mt-hdr">Pioggia</div><div class="mt-hdr">Vento</div>'+LIVE_DAYS.map(function(d){return '<div class="mt-cell mt-day">'+(d.rn?"\u{1F327}":"\u2600\ufe0f")+" "+d.pl+'</div><div class="mt-cell">'+d.wt+'</div><div class="mt-cell">'+(d.rn?"probabile":"basso")+'</div><div class="mt-cell">'+(d.wind?"\u{1F4A8} "+d.wind+" km/h":"--")+'</div>'}).join("")+'</div></div><button class="wlb" onclick="fetchW()">\u{1F504} Aggiorna live</button><div id="wl" style="margin-top:8px;font-size:12px;color:var(--tx2)"></div></div>';
 }
 function fetchW(){
   var el=document.getElementById("wl");el.textContent="Caricamento...";
@@ -1120,7 +1240,7 @@ function fetchW(){
 
 function refreshInfo(){renderIf()}
 function renderIf(){
-  var h='';
+  var h='<div class="ic"><h3>\u{1F4B1} Convertitore EUR/GBP</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="number" class="ed-input" id="fx-input" placeholder="Importo" style="width:100px;flex:none" oninput="convertCurrency()"><select class="ed-input" id="fx-dir" style="width:auto;flex:none" onchange="convertCurrency()"><option value="eur2gbp">EUR \u2192 GBP</option><option value="gbp2eur">GBP \u2192 EUR</option></select><div id="fx-output" style="font-size:20px;font-weight:700;color:var(--pub)">0.00 GBP</div></div><div id="fx-rate" style="font-size:11px;color:var(--tx3);margin-top:6px">1 EUR = '+EUR_GBP_RATE.toFixed(4)+' GBP</div></div>';
   h+='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div>';
   h+='<div class="ic"><h3>\u{1F4D6} Diario di viaggio</h3><button class="wlb" onclick="exportDiary()" style="width:100%">\u{1F4BE} Esporta diario come HTML</button></div>';
   h+='<div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div>';

@@ -283,3 +283,15 @@ html.light .tgl::after{left:21px}
 
 /* === RESPONSIVE === */
 @media(min-width:600px){.shell{max-width:480px;margin:0 auto}}
+
+/* === QUICK VIEW === */
+.qv{margin:8px 20px 0;padding:10px 14px;background:var(--acc);border-radius:var(--r2);display:flex;align-items:center;gap:12px}
+.qv-now,.qv-next{display:flex;flex-direction:column}
+.qv-label{font-size:10px;font-weight:600;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px}
+.qv-name{font-size:14px;font-weight:600;color:#fff}
+.qv-next{opacity:.7}
+.qv-next .qv-name{font-size:12px}
+
+/* === DIARY DELETE === */
+.diary-del{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--err);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.diary-del:active{opacity:.7}
