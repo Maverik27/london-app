@@ -324,8 +324,6 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .bc-achs{padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px}
 .bc-ach{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border-radius:10px;flex:1;min-width:140px}
 .bc-ach-ico{font-size:18px}.bc-ach-name{font-size:12px;font-weight:600}.bc-ach-desc{font-size:10px;color:var(--tx3)}
-.bc-locked{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
-.bc-lock{font-size:11px;color:var(--tx3);padding:4px 10px;border:1px dashed var(--brd);border-radius:6px}
 .bp-row{display:flex;align-items:center;padding:14px;gap:12px;border-bottom:1px solid var(--brd)}.bp-row:last-child{border:none}
 .bp-visited{border-left:3px solid var(--pub);border-radius:0}
 .bp-check{font-size:16px;width:24px;text-align:center;flex-shrink:0}
@@ -401,3 +399,6 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .tr-closures-card{background:var(--card);border:1px solid var(--wrn);border-radius:var(--r2);overflow:hidden}
 
 .tl>.add-between{padding:8px 0;justify-content:center}
+
+/* Locked achievements */
+.bc-ach-locked{opacity:.4;filter:grayscale(1)}

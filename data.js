@@ -148,9 +148,9 @@ var DAYS = [
 {t:"15:15",n:"Pausa hotel",tp:"Hotel",ds:"Rinfrescata.",du:"~1h 15min",la:51.521,ln:-0.0776,ad:"Hotel",di:"",ws:[],bk:null,pla:null,pln:null},
 {t:"16:30",n:"Queen's Head",tp:"Pub/Birra",ds:"Bangers & mash.",du:"~45 min",la:51.5227,ln:-0.078,ad:"Shoreditch High St",di:"3 min.",ws:[],bk:null,pla:51.521,pln:-0.0776},
 {t:"17:15",n:"The Grocer",tp:"Pub/Birra",ds:"Beer garden, Guinness.",du:"~45 min",la:51.5201,ln:-0.0761,ad:"4 Crispin Pl",di:"3 min.",ws:[],bk:null,pla:51.5227,pln:-0.078},
-{t:"18:00",n:"Pride of Spitalfields",tp:"Pub/Birra",ds:"Ultimo saluto al gatto.",du:"~45 min",la:51.5189,ln:-0.0712,ad:"3 Heneage St",di:"5 min.",ws:[],bk:null,pla:51.5201,pln:-0.0761},
+{t:"18:00",n:"The Pride of Spitalfields",tp:"Pub/Birra",ds:"Ultimo saluto al gatto.",du:"~45 min",la:51.5189,ln:-0.0712,ad:"3 Heneage St",di:"5 min.",ws:[],bk:null,pla:51.5201,pln:-0.0761},
 {t:"18:45",n:"Rudy's o Sud Italia",tp:"Cibo",ds:"Rudy's ~\u00a315. Sud Italia \u00a33-7.",du:"~1h",la:51.5205,ln:-0.0773,ad:"Spital Sq",di:"2 min.",ws:[],bk:null,pla:null,pln:null},
-{t:"19:45",n:"Ten Bells, ultima sera",tp:"Pub/Birra",ds:"L'ultima pinta.",du:"~1h 30min",la:51.5194,ln:-0.0743,ad:"84 Commercial St",di:"5 min.",ws:[],bk:null,pla:51.5205,pln:-0.0773},
+{t:"19:45",n:"The Ten Bells",tp:"Pub/Birra",ds:"L'ultima pinta.",du:"~1h 30min",la:51.5194,ln:-0.0743,ad:"84 Commercial St",di:"5 min.",ws:[],bk:null,pla:51.5205,pln:-0.0773},
 {t:"21:15",n:"Rientro",tp:"Hotel",ds:"Domani checkout.",la:51.521,ln:-0.0776,ad:"Hotel",di:"",ws:[],bk:null,pla:null,pln:null}]}]},
 
 {id:5,pl:"Mar 31",t:"Partenza: Leadenhall, funivia e Stansted",wt:"7-14\u00b0C",rn:1,dr:"\ud83e\udde5 Comodo. Impermeabile.",wn:"Checkout 11. Trolley tutto il giorno.",km:6,zones:[
