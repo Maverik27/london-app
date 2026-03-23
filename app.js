@@ -833,17 +833,39 @@ function getAchievements(){
   var total=0;for(var k in beers)total+=beers[k];
   var pubCount=Object.keys(beers).length;
   var achs=[];
-  if(total>=1)achs.push({icon:"\ud83c\udf7a",name:"First Pint",desc:"La prima pinta del viaggio"});
-  if(total>=5)achs.push({icon:"\u{1F3F5}",name:"High Five",desc:"5 pinte bevute"});
-  if(total>=10)achs.push({icon:"\ud83c\udfc6",name:"Perfect Ten",desc:"10 pinte bevute"});
-  if(total>=20)achs.push({icon:"\ud83d\udc51",name:"Pub Legend",desc:"20 pinte bevute"});
-  if(pubCount>=3)achs.push({icon:"\ud83d\uddfa",name:"Explorer",desc:"3 pub diversi visitati"});
-  if(pubCount>=5)achs.push({icon:"\ud83e\udded",name:"Pub Crawler",desc:"5 pub diversi visitati"});
-  if(pubCount>=8)achs.push({icon:"\u2b50",name:"Master Crawler",desc:"8 pub diversi visitati"});
-  // Check for hat trick at any pub
+  // Pint milestones (high thresholds - 3 pints x 3 pubs = 9 per night easily)
+  if(total>=1)achs.push({icon:"\u{1F37A}",name:"First Pint",desc:"La prima pinta del viaggio"});
+  if(total>=10)achs.push({icon:"\u{1F37B}",name:"Warming Up",desc:"10 pinte bevute"});
+  if(total>=20)achs.push({icon:"\u{1F3C5}",name:"Session Pro",desc:"20 pinte bevute"});
+  if(total>=30)achs.push({icon:"\u{1F3C6}",name:"Marathon Drinker",desc:"30 pinte bevute"});
+  if(total>=50)achs.push({icon:"\u{1F451}",name:"Pub Royalty",desc:"50 pinte bevute"});
+  if(total>=75)achs.push({icon:"\u{1F48E}",name:"Diamond Liver",desc:"75 pinte bevute"});
+  if(total>=100)achs.push({icon:"\u{1F30D}",name:"Centurion",desc:"100 pinte! Leggenda."});
+  // Pub diversity
+  if(pubCount>=3)achs.push({icon:"\u{1F463}",name:"Pub Hopper",desc:"3 pub diversi"});
+  if(pubCount>=6)achs.push({icon:"\u{1F5FA}",name:"Explorer",desc:"6 pub diversi"});
+  if(pubCount>=10)achs.push({icon:"\u{1F9ED}",name:"Pub Crawler",desc:"10 pub diversi"});
+  if(pubCount>=15)achs.push({icon:"\u2B50",name:"Master Crawler",desc:"15+ pub diversi"});
+  // Per-pub loyalty
   for(var k in beers){
-    if(beers[k]>=3){achs.push({icon:"\ud83c\udfa9",name:"Hat Trick",desc:"3+ pinte in un pub"});break}
+    if(beers[k]>=5){achs.push({icon:"\u{1F3A9}",name:"Hat Trick x5",desc:"5+ pinte in un pub"});break}
   }
+  for(var k in beers){
+    if(beers[k]>=10){achs.push({icon:"\u{1F3E0}",name:"Local",desc:"10+ pinte in un pub"});break}
+  }
+  // Guinness trail
+  var gpubs=0;
+  for(var k in beers){
+    var kl=k.toLowerCase();
+    if(kl.indexOf("guinness")>=0||kl.indexOf("toucan")>=0||kl.indexOf("devonshire")>=0||kl.indexOf("grocer")>=0||kl.indexOf("dublin")>=0)gpubs++;
+  }
+  if(gpubs>=2)achs.push({icon:"\u{1F1EE}\u{1F1EA}",name:"Irish Soul",desc:"2+ Guinness pubs visitati"});
+  if(gpubs>=4)achs.push({icon:"\u2618\ufe0f",name:"Guinness Master",desc:"4+ Guinness pubs visitati"});
+  // All pubs visited
+  var totalPubs=0;
+  var seen={};
+  LIVE_DAYS.forEach(function(d){allItems(d).forEach(function(s){if(s.tp==="Pub/Birra"&&!seen[s.n]){seen[s.n]=true;totalPubs++}})});
+  if(pubCount>=totalPubs&&totalPubs>0)achs.push({icon:"\u{1F3C1}",name:"Completionist",desc:"Tutti i "+totalPubs+" pub visitati!"});
   return achs;
 }
 
@@ -1161,8 +1183,39 @@ function getMetroWarning(stop){
 
 
 function filterCat(cat){
-  document.getElementById("si").value=cat;
-  doSearch();
+  // Clear search input and filter by category
+  var q=document.getElementById("si").value.trim().toLowerCase();
+  var r=document.getElementById("srs");
+  var nc=document.getElementById("nom-results");
+  if(nc)nc.innerHTML="";
+  
+  var found=[];
+  LIVE_DAYS.forEach(function(d,di){
+    allItems(d).forEach(function(s,si){
+      if(s.tp===cat){
+        found.push({stop:s,dayIdx:di,stopIdx:si,day:d.pl});
+      }
+    });
+  });
+  
+  var h='';
+  if(found.length>0){
+    var tn=TN[cat]||cat;
+    h+='<div class="sr-section"><div class="sr-section-hdr">'+tn.toUpperCase()+' NELL\'ITINERARIO</div>';
+    found.forEach(function(f){
+      var cl=TC[f.stop.tp]||"attr";
+      var ti=TI[f.stop.tp]||"\u{1F3DB}";
+      h+='<div class="sr-item" onclick="goTo('+f.dayIdx+',\''+f.stop.t+'\')">';
+      h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
+      h+='<div class="sr-item-info"><div class="sr-item-name">'+f.stop.n+'</div><div class="sr-item-meta">'+f.day+(f.stop.ad?' \u2022 '+f.stop.ad:'')+'</div></div>';
+      h+='<svg class="sr-item-arr" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="var(--tx3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }else{
+    h+='<div class="sr-section"><div class="sr-section-hdr">'+cat+'</div><div class="sr-empty-small">Nessun risultato</div></div>';
+  }
+  r.innerHTML=h;
 }
 
 function doLocate(){
@@ -1317,7 +1370,7 @@ function renderDay(i){
       var nt=localStorage.getItem("nt-"+i+"-"+gi)||"";
       var isSkip=localStorage.getItem("sk-"+i+"-"+gi)==="1";
       var cmLink="";
-      if(s.la)cmLink="https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+"&endaddress="+encodeURIComponent(s.ad||s.n);
+      if(s.la)cmLink="https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n);
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
@@ -1482,7 +1535,7 @@ function fetchTfl(){
       TFL_STATUS[l.id]={sev:st.statusSeverity||0,desc:st.statusSeverityDescription||"",reason:st.reason||""};
     });
     
-    // Closures section
+    // Closures section - render above the line list
     var closures='';
     data.forEach(function(l){
       var st=l.lineStatuses&&l.lineStatuses[0]?l.lineStatuses[0]:{};
@@ -1492,8 +1545,11 @@ function fetchTfl(){
         closures+='<div class="tr-closure"><div class="tr-closure-line" style="border-left:3px solid '+lColor+';padding-left:10px"><div class="tr-closure-name">'+lName+'</div><div class="tr-closure-reason">'+st.reason.replace(/'/g,"&#39;")+'</div></div></div>';
       }
     });
-    if(closures){
-      document.getElementById("tr-list").innerHTML+=('<div class="tr-closures-hdr">AVVISI E CHIUSURE</div>'+closures);
+    var clEl=document.getElementById("tr-closures");
+    if(closures&&clEl){
+      clEl.innerHTML='<div class="tr-closures-card"><div class="tr-closures-hdr">AVVISI E CHIUSURE</div>'+closures+'</div>';
+    }else if(clEl){
+      clEl.innerHTML='';
     }
     
     // Refresh timeline to show metro warnings
@@ -1513,6 +1569,7 @@ function renderTr(){
   h+='<div class="tr-hero-title">TfL Londra</div>';
   h+='<div class="tr-hero-stats" id="tr-stats"><div class="tr-stat"><div class="tr-stat-n" style="color:var(--ok)">--</div><div class="tr-stat-l">attive</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--wrn)">--</div><div class="tr-stat-l">rallentate</div></div><div class="tr-stat"><div class="tr-stat-n" style="color:var(--err)">--</div><div class="tr-stat-l">sospese</div></div></div>';
   h+='</div>';
+  h+='<div class="tr-closures" id="tr-closures"></div>';
   h+='<div class="tr-list" id="tr-list"><div style="padding:20px;text-align:center;color:var(--tx3)">Caricamento...</div></div>';
   h+='<div class="tr-footer" id="tr-footer"></div>';
   h+='</div>';

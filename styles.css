@@ -38,7 +38,7 @@ html.light .tgl::after{left:21px}
 .pg{display:none;padding-bottom:76px}.pg.on{display:block}
 
 /* === PILLS === */
-.pills{display:flex;gap:6px;padding:12px 20px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.pills::-webkit-scrollbar{display:none}
+.pills{display:flex;gap:6px;padding:12px 20px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:57px;z-index:50;background:var(--bg)}.pills::-webkit-scrollbar{display:none}
 .pl{white-space:nowrap;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid var(--brd);background:var(--bg2);color:var(--tx2);cursor:pointer;flex-shrink:0;transition:.2s}
 .pl.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 
@@ -377,7 +377,6 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .srbox{background:var(--card);border:1px solid var(--brd);border-radius:var(--r2);padding:14px}
 .srin{width:100%;padding:12px 14px 12px 38px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;color:var(--tx);font-size:15px;font-family:var(--f);outline:none}
 .srin:focus{border-color:var(--acc)}.srin::placeholder{color:var(--tx3)}
-.sri{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--tx3);pointer-events:none}
 .sr-cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .sr-chip{font-size:12px;font-weight:500;padding:6px 12px;border-radius:16px;border:1px solid var(--brd);background:var(--bg2);color:var(--tx2);cursor:pointer}
 .sr-chip:active{background:var(--acc);color:#fff;border-color:var(--acc)}
@@ -397,3 +396,8 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .sr-gmaps{background:var(--card);border:1px solid var(--brd);border-radius:var(--r2);padding:14px;display:flex;align-items:center;gap:10px;cursor:pointer}
 .sr-gmaps:active{background:var(--bg3)}
 .sr-gmaps-text{flex:1;font-size:14px;font-weight:500;color:var(--tx2)}
+
+.tr-closures{padding:0 0 10px}
+.tr-closures-card{background:var(--card);border:1px solid var(--wrn);border-radius:var(--r2);overflow:hidden}
+
+.tl>.add-between{padding:8px 0;justify-content:center}
