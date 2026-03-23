@@ -321,7 +321,7 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .wt-hd div:last-child{font-weight:600}
 .wt-hero-dress{margin-top:10px;font-size:12px;color:var(--tx2);background:var(--bg3);padding:6px 10px;border-radius:8px}
 .wt-list{background:var(--card);border:1px solid var(--brd);border-radius:var(--r2);overflow:hidden}
-.wt-list-hdr{display:grid;grid-template-columns:72px 28px 1fr 1fr 44px 36px 20px;padding:8px 12px;border-bottom:1px solid var(--brd);font-size:11px;color:var(--tx3);align-items:center}
+.wt-list-hdr{display:grid;grid-template-columns:20px 64px 28px 1fr 1fr 44px 36px;padding:8px 12px;border-bottom:1px solid var(--brd);font-size:11px;color:var(--tx3);align-items:center}
 .wt-list-hdr span{text-align:center}
 .wt-list-hdr span:first-child{text-align:left}
 .wt-row{border-bottom:1px solid var(--brd);cursor:pointer;transition:.1s}
@@ -329,9 +329,8 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .wt-row:active{background:var(--bg3)}
 .wt-row.wt-trip{border-left:3px solid var(--acc)}
 .wt-row.wt-open{background:var(--bg3)}
-.wt-row-main{display:grid;grid-template-columns:72px 28px 1fr 1fr 44px 36px 20px;padding:14px 12px;align-items:center}
+.wt-row-main{display:grid;grid-template-columns:20px 64px 28px 1fr 1fr 44px 36px;padding:14px 12px;align-items:center}
 .wt-row-day{font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px}
-.wt-badge{font-size:9px;font-weight:600;color:var(--acc);background:var(--accs);padding:2px 5px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px}
 .wt-row-ico{font-size:16px;text-align:center}
 .wt-row-min{font-size:14px;text-align:center;color:var(--tx2)}
 .wt-row-max{font-size:14px;text-align:center;font-weight:600}

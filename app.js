@@ -1368,7 +1368,7 @@ function renderMt(){
   
   // Day list
   h+='<div class="wt-list">';
-  h+='<div class="wt-list-hdr"><span></span><span></span><span>Min</span><span>Max</span><span>\u{1F4A7}</span><span>\u{1F4A8}</span><span></span></div>';
+  h+='<div class="wt-list-hdr"><span></span><span></span><span></span><span>Min</span><span>Max</span><span>\u{1F4A7}</span><span>\u{1F4A8}</span></div>';
   
   if(wtDays&&wtDays.length){
     wtDays.forEach(function(wd,i){
@@ -1379,13 +1379,13 @@ function renderMt(){
       
       h+='<div class="wt-row'+(isTrip?' wt-trip':'')+(isOpen?' wt-open':'')+'" onclick="wtToggle('+i+')">';
       h+='<div class="wt-row-main">';
-      h+='<span class="wt-row-day">'+wd.short+(isTrip?'<span class="wt-badge">viaggio</span>':'')+'</span>';
+      h+='<span class="wt-row-arr">'+(isOpen?'\u25BE':'\u25B8')+'</span>';
+      h+='<span class="wt-row-day">'+wd.short+'</span>';
       h+='<span class="wt-row-ico">'+(rainHigh?"\u{1F327}\ufe0f":"\u2600\ufe0f")+'</span>';
       h+='<span class="wt-row-min">'+wd.min+'\u00b0</span>';
       h+='<span class="wt-row-max">'+wd.max+'\u00b0</span>';
       h+='<span class="wt-row-rain'+(rainHigh?' hi':'')+'">'+wd.rain+'%</span>';
       h+='<span class="wt-row-wind">'+windSvg+'</span>';
-      h+='<span class="wt-row-arr">'+(isOpen?'\u25BE':'\u25B8')+'</span>';
       h+='</div>';
       
       if(isOpen){
