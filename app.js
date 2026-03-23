@@ -1471,7 +1471,7 @@ function renderDay(i){
       var nt=localStorage.getItem("nt-"+i+"-"+gi)||"";
       var isSkip=localStorage.getItem("sk-"+i+"-"+gi)==="1";
       
-      var cmHref=s.la?"https://citymapper.com/directions?startcoord=&endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+(s.ad?"&endaddress="+encodeURIComponent(s.ad):""):"";
+      var cmHref=s.la?"https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+(s.ad?"&endaddress="+encodeURIComponent(s.ad):""):"";
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
