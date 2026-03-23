@@ -1471,7 +1471,7 @@ function renderDay(i){
       var nt=localStorage.getItem("nt-"+i+"-"+gi)||"";
       var isSkip=localStorage.getItem("sk-"+i+"-"+gi)==="1";
       
-      var cmHref=s.la?"https://citymapper.com/directions?endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+(s.ad?"&endaddress="+encodeURIComponent(s.ad):""):"";
+      var cmHref=s.la?"https://citymapper.com/directions?startcoord="+CONFIG.hotelLat+","+CONFIG.hotelLng+"&endcoord="+s.la+","+s.ln+"&endname="+encodeURIComponent(s.n)+(s.ad?"&endaddress="+encodeURIComponent(s.ad):""):"";
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
@@ -1493,7 +1493,7 @@ function renderDay(i){
       if(s.di)h+='<div class="sdb"><div class="sdl">\u{1F5FA} Come arrivarci</div><div class="sdtx">'+s.di+'</div></div>';
       if(s.ad)h+='<div class="sdb"><div class="sdl">\u{1F4CD} '+s.ad+'</div></div>';
       h+='<div class="sdlk">';
-      if(cmHref)h+='<a class="btn-ico" href="'+cmHref+'" target="_blank" title="Citymapper">'+ICN.citymapper+'</a>';
+      if(cmHref)h+='<a class="btn-ico" href="'+cmHref+'" title="Citymapper">'+ICN.citymapper+'</a>';
       if(s.la)h+='<a class="btn-ico" href="https://www.google.com/maps/dir/?api=1&destination='+s.la+','+s.ln+'&travelmode=walking" target="_blank" title="Google Maps">'+ICN.gmaps+'</a>';
       h+='<a class="btn-ico" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showPhrasesIdx('+i+','+gi+')" title="Frasi utili">'+ICN.phrases+'</a>';
       h+=diaryInfo.html;
