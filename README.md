@@ -1,4 +1,4 @@
-# 🇬🇧 London App
+# London App
 
 PWA per pianificare e vivere un viaggio a Londra. Timeline interattiva, meteo live, trasporti TfL, pint counter e molto altro.
 
