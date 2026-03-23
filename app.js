@@ -1054,42 +1054,14 @@ function showGuide(){
 }
 
 
-/* --- Swipe between tabs --- */
-var TAB_ORDER=["p1","p2","p3","p4","p6","p5"];
-var swipeStartX=0,swipeStartY=0,swipeTab=null;
 
-function initSwipeTabs(){
-  var shell=document.querySelector(".shell");
-  if(!shell)return;
-  shell.addEventListener("touchstart",function(e){
-    swipeStartX=e.touches[0].clientX;
-    swipeStartY=e.touches[0].clientY;
-    // Find which tab is active
-    var active=document.querySelector(".pg.on");
-    swipeTab=active?active.id:null;
-  },{passive:true});
-  
-  shell.addEventListener("touchend",function(e){
-    if(!swipeTab)return;
-    // Skip swipe on Piano tab (it uses swipe for days)
-    if(swipeTab==="p1")return;
-    
-    var dx=e.changedTouches[0].clientX-swipeStartX;
-    var dy=e.changedTouches[0].clientY-swipeStartY;
-    // Must be horizontal swipe (dx > dy) and long enough
-    if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx)*0.7)return;
-    
-    var idx=TAB_ORDER.indexOf(swipeTab);
-    if(idx<0)return;
-    
-    if(dx<0&&idx<TAB_ORDER.length-1){
-      // Swipe left = next tab
-      switchToTab(TAB_ORDER[idx+1]);
-    }else if(dx>0&&idx>0){
-      // Swipe right = prev tab
-      switchToTab(TAB_ORDER[idx-1]);
-    }
-  },{passive:true});
+/* --- Swipe: days on Piano, tabs everywhere --- */
+var TAB_ORDER=["p1","p2","p3","p4","p6","p5"];
+var swStartX=0,swStartY=0;
+
+function getActiveTab(){
+  var el=document.querySelector(".pg.on");
+  return el?el.id:"p1";
 }
 
 function switchToTab(tabId){
@@ -1101,6 +1073,45 @@ function switchToTab(tabId){
     if(b.dataset.p===tabId)b.classList.add("on");
   });
   updateHeader(tabId);
+}
+
+function initSwipe(){
+  document.addEventListener("touchstart",function(e){
+    swStartX=e.touches[0].clientX;
+    swStartY=e.touches[0].clientY;
+  },{passive:true});
+  
+  document.addEventListener("touchend",function(e){
+    var dx=e.changedTouches[0].clientX-swStartX;
+    var dy=e.changedTouches[0].clientY-swStartY;
+    if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx)*0.6)return;
+    
+    var tab=getActiveTab();
+    var tabIdx=TAB_ORDER.indexOf(tab);
+    
+    if(tab==="p1"){
+      // On Piano: swipe changes day first, then overflows to tabs
+      if(dx<0){
+        // Swipe left: next day or next tab
+        if(cD<LIVE_DAYS.length-1){
+          selDay(cD+1);
+        }else{
+          // Last day: go to next tab
+          if(tabIdx<TAB_ORDER.length-1)switchToTab(TAB_ORDER[tabIdx+1]);
+        }
+      }else{
+        // Swipe right: prev day
+        if(cD>0)selDay(cD-1);
+      }
+    }else{
+      // Other tabs: swipe switches tabs
+      if(dx<0&&tabIdx<TAB_ORDER.length-1){
+        switchToTab(TAB_ORDER[tabIdx+1]);
+      }else if(dx>0&&tabIdx>0){
+        switchToTab(TAB_ORDER[tabIdx-1]);
+      }
+    }
+  },{passive:true});
 }
 
 function doLocate(){
@@ -1136,10 +1147,10 @@ checkVersion();
 renderDay(0);renderSearch();renderTr();renderMt();renderIf();renderBeerPage();
   document.getElementById("si").addEventListener("input",doSearch);
   var el=document.getElementById("dc");
-  el.addEventListener("touchstart",function(e){tsX=e.touches[0].clientX},{passive:true});
-  el.addEventListener("touchend",function(e){var d=tsX-e.changedTouches[0].clientX;if(Math.abs(d)>60){if(d>0&&cD<DAYS.length-1)selDay(cD+1);if(d<0&&cD>0)selDay(cD-1)}},{passive:true});
+  // day swipe handled by initSwipe()
   setTimeout(initMap,300);
-  initSwipeTabs();
+  initSwipe();
+
   setTimeout(fetchWeatherAuto,500);
   setTimeout(fetchTfl,1000);
   setTimeout(fetchExchangeRate,1500);
