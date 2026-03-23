@@ -918,6 +918,7 @@ function fetchWeatherAuto() {
 
 
 function renderQuickView(){
+  if(!LIVE_DAYS||!LIVE_DAYS.length)return "";
   var now=new Date();
   var dayIdx=-1;
   // Find which day we're on (26-31 Mar 2026)
@@ -968,7 +969,7 @@ function fetchExchangeRate(){
     if(d.rates&&d.rates.GBP){
       EUR_GBP_RATE=d.rates.GBP;
       var el=document.getElementById("fx-rate");
-      if(el)el.textContent="1 EUR = "+EUR_GBP_RATE.toFixed(4)+" GBP";
+      if(el)el.textContent="1 EUR = "+(typeof EUR_GBP_RATE!=='undefined'?EUR_GBP_RATE:0.86).toFixed(4)+" GBP";
     }
   })
   .catch(function(){});
@@ -1085,7 +1086,7 @@ function renderDay(i){
   var skipped=all.filter(function(_,si){return localStorage.getItem("sk-"+i+"-"+si)==="1"}).length;
   document.getElementById("pbar").style.width=(all.length?Math.round(skipped/all.length*100):0)+"%";
 
-  var h=renderQuickView()+'<div class="dhc"><div class="dhc-t">'+d.t+'</div><div class="dhc-chips"><span class="chip chip-w">'+d.wt+'</span><span class="chip '+(d.rn?"chip-r":"chip-s")+'">'+(d.rn?"\u{1F327} Pioggia":"\u2600\ufe0f Sole")+'</span>'+(d.sunrise?'<span class="chip chip-w">\u{1F305} '+d.sunrise.split("T")[1].substring(0,5)+'</span>':'')+(d.sunset?'<span class="chip chip-w">\u{1F307} '+d.sunset.split("T")[1].substring(0,5)+'</span>':'')+'</span></div><div class="dhc-dress">'+d.dr+'</div>'+(d.wn?'<div class="dhc-wrn">'+d.wn+'</div>':'')+'<div class="dhc-stats"><span><b>'+all.length+'</b> tappe</span><span><b>'+pb+'</b> \u{1F37A}</span><span><b>'+fb+'</b> \u{1F37D}</span><span>~<b>'+d.km+'</b> km</span></div></div>';
+  var h=renderQuickView()+'<div class="dhc"><div class="dhc-t">'+d.t+'</div><div class="dhc-chips"><span class="chip chip-w">'+d.wt+'</span><span class="chip '+(d.rn?"chip-r":"chip-s")+'">'+(d.rn?"\u{1F327} Pioggia":"\u2600\ufe0f Sole")+'</span>'+(d.sunrise&&d.sunrise.indexOf("T")>0?'<span class="chip chip-w">\u{1F305} '+d.sunrise.split("T")[1].substring(0,5)+'</span>':'')+(d.sunset&&d.sunset.indexOf("T")>0?'<span class="chip chip-w">\u{1F307} '+d.sunset.split("T")[1].substring(0,5)+'</span>':'')+'</span></div><div class="dhc-dress">'+d.dr+'</div>'+(d.wn?'<div class="dhc-wrn">'+d.wn+'</div>':'')+'<div class="dhc-stats"><span><b>'+all.length+'</b> tappe</span><span><b>'+pb+'</b> \u{1F37A}</span><span><b>'+fb+'</b> \u{1F37D}</span><span>~<b>'+d.km+'</b> km</span></div></div>';
 
   h+='<div class="tl">';
   var gi=0;
@@ -1110,7 +1111,8 @@ function renderDay(i){
 
       h+='<div class="zk'+(isSkip?" skip":"")+'" id="zk-'+i+'-'+gi+'" onclick="tgl('+i+','+gi+')">';
       h+='<div class="zk-wrap"><div class="zk-content"><div class="zk-top"><span class="zk-dot '+cl+'"></span><span class="zk-time">'+s.t+'</span><span class="zk-lb '+cl+'">'+ti+" "+tn+'</span></div>';
-      h+='<div class="zk-nm">'+s.n+' <a class="ed-pen" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showEditStop('+i+','+gi+')" title="Modifica">'+ICN.edit+'</a></div>';
+      var diaryInfo=renderDiaryBtn(i,gi);
+      h+='<div class="zk-nm">'+s.n+(diaryInfo.hasPhoto?' <span style="font-size:12px">\u{1F4F7}</span>':'')+(diaryInfo.hasEntries&&!diaryInfo.hasPhoto?' <span style="font-size:12px">\u{1F4DD}</span>':'')+' <a class="ed-pen" href="javascript:void(0)" onclick="event.stopPropagation();event.preventDefault();showEditStop('+i+','+gi+')" title="Modifica">'+ICN.edit+'</a></div>';
       h+='<div class="zk-ds">'+s.ds+'</div>';
       if(tgs)h+='<div class="zk-tags">'+tgs+'</div>';
       if(s.du)h+='<div class="zk-du">'+s.du+'</div>';
@@ -1240,7 +1242,7 @@ function fetchW(){
 
 function refreshInfo(){renderIf()}
 function renderIf(){
-  var h='<div class="ic"><h3>\u{1F4B1} Convertitore EUR/GBP</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="number" class="ed-input" id="fx-input" placeholder="Importo" style="width:100px;flex:none" oninput="convertCurrency()"><select class="ed-input" id="fx-dir" style="width:auto;flex:none" onchange="convertCurrency()"><option value="eur2gbp">EUR \u2192 GBP</option><option value="gbp2eur">GBP \u2192 EUR</option></select><div id="fx-output" style="font-size:20px;font-weight:700;color:var(--pub)">0.00 GBP</div></div><div id="fx-rate" style="font-size:11px;color:var(--tx3);margin-top:6px">1 EUR = '+EUR_GBP_RATE.toFixed(4)+' GBP</div></div>';
+  var h='<div class="ic"><h3>\u{1F4B1} Convertitore EUR/GBP</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="number" class="ed-input" id="fx-input" placeholder="Importo" style="width:100px;flex:none" oninput="convertCurrency()"><select class="ed-input" id="fx-dir" style="width:auto;flex:none" onchange="convertCurrency()"><option value="eur2gbp">EUR \u2192 GBP</option><option value="gbp2eur">GBP \u2192 EUR</option></select><div id="fx-output" style="font-size:20px;font-weight:700;color:var(--pub)">0.00 GBP</div></div><div id="fx-rate" style="font-size:11px;color:var(--tx3);margin-top:6px">1 EUR = '+(typeof EUR_GBP_RATE!=='undefined'?EUR_GBP_RATE:0.86).toFixed(4)+' GBP</div></div>';
   h+='<div class="ic"><h3>Legenda timeline</h3><div class="leg"><div class="leg-i"><div class="leg-d" style="background:var(--pub)"></div>Pub</div><div class="leg-i"><div class="leg-d" style="background:var(--food)"></div>Cibo</div><div class="leg-i"><div class="leg-d" style="background:var(--attr)"></div>Attrazione</div><div class="leg-i"><div class="leg-d" style="background:var(--mkt)"></div>Mercato</div><div class="leg-i"><div class="leg-d" style="background:var(--trn)"></div>Trasporto</div><div class="leg-i"><div class="leg-d" style="background:var(--fot)"></div>Foto</div></div></div>';
   h+='<div class="ic"><h3>\u{1F4D6} Diario di viaggio</h3><button class="wlb" onclick="exportDiary()" style="width:100%">\u{1F4BE} Esporta diario come HTML</button></div>';
   h+='<div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div>';
