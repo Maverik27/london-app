@@ -403,9 +403,23 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 /* Locked achievements */
 .bc-ach-locked{opacity:.4;filter:grayscale(1)}
 
-/* Beer fun stats */
-.bc-fun-stats{padding:0 14px 14px}
-.bc-fs-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--brd);font-size:13px}
-.bc-fs-row:last-child{border:none}
-.bc-fs-label{color:var(--tx2)}
-.bc-fs-val{font-weight:600}
+
+/* Daily chart */
+.bc-daily{display:flex;align-items:flex-end;gap:6px;height:100px;padding-bottom:4px}
+.bc-daily-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.bc-daily-n{font-size:12px;font-weight:600}
+.bc-daily-fill{width:100%;background:var(--pub);border-radius:4px 4px 0 0;margin-top:auto}
+.bc-daily-lbl{font-size:11px;color:var(--tx3)}
+/* Top pubs */
+.bc-top-pubs{display:flex;flex-direction:column;gap:8px}
+.bc-tp-row{}
+.bc-tp-header{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.bc-tp-name{font-weight:600}
+.bc-tp-count{color:var(--tx2)}
+.bc-tp-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.bc-tp-bar{height:100%;background:var(--pub);border-radius:3px}
+/* Stats table */
+.bc-st-row{display:flex;justify-content:space-between;padding:12px 14px;font-size:13px}
+.bc-st-brd{border-bottom:1px solid var(--brd)}
+.bc-st-label{color:var(--tx2)}
+.bc-st-val{font-weight:600}

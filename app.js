@@ -756,7 +756,8 @@ function renderBeerPage(){
   var stats=getBeerStats();
   
   var h='<div class="bc-wrap">';
-  // Hero
+  
+  // 1. HERO - Pint Counter
   h+='<div class="bc-hero" style="position:relative">';
   h+='<div class="wt-refresh" onclick="resetBeers()" style="position:absolute;top:12px;right:12px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 2h12M5 2v-0M11 2v-0M4 5h8l-.7 8.5a1 1 0 01-1 .9H5.7a1 1 0 01-1-.9L4 5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
   h+='<div class="bc-hero-num">'+total+'</div>';
@@ -767,7 +768,18 @@ function renderBeerPage(){
   if(stats.topPub)h+='<div class="bc-hs"><div class="bc-hs-n">\u{1F947}</div><div class="bc-hs-l">'+stats.topPub+'</div></div>';
   h+='</div></div>';
   
+  // 2. PINTE PER GIORNO
+  h+=renderDailyChart(beers);
+  
+  // 3. TOP PUB
+  h+=renderTopPubs(beers);
+  
+  // 4. ACHIEVEMENTS + BEER PASSPORT
   h+=renderBeerCounter();
+  
+  // 5. STATISTICHE
+  h+=renderBeerStats(stats);
+  
   h+='</div>';
   document.getElementById("beerw").innerHTML=h;
 }
@@ -815,6 +827,86 @@ function removeBeer(pubName){
     saveBeers(beers);
     renderBeerPage();
   }
+}
+
+
+function renderDailyChart(beers){
+  // Count pints per day based on which pubs are in each day
+  var days=[];
+  var maxDay=0;
+  LIVE_DAYS.forEach(function(d,di){
+    var count=0;
+    allItems(d).forEach(function(s){
+      if(s.tp==="Pub/Birra"&&beers[s.n])count+=beers[s.n];
+    });
+    days.push({label:d.pl.split(" ")[0],count:count});
+    if(count>maxDay)maxDay=count;
+  });
+  if(maxDay===0)return '';
+  
+  var h='<div class="bc-card" style="padding:14px"><div class="bc-card-hdr" style="border:none;padding:0 0 10px">PINTE PER GIORNO</div>';
+  h+='<div class="bc-daily">';
+  days.forEach(function(d){
+    var pct=maxDay>0?Math.round(d.count/maxDay*100):0;
+    h+='<div class="bc-daily-bar"><div class="bc-daily-n">'+d.count+'</div><div class="bc-daily-fill" style="height:'+Math.max(pct,2)+'%'+(d.count===maxDay?'':';opacity:0.7')+'"></div><div class="bc-daily-lbl">'+d.label+'</div></div>';
+  });
+  h+='</div></div>';
+  return h;
+}
+
+
+function renderTopPubs(beers){
+  var pubs=[];
+  for(var k in beers)pubs.push({name:k,count:beers[k]});
+  pubs.sort(function(a,b){return b.count-a.count});
+  if(!pubs.length)return '';
+  
+  var top=pubs.slice(0,5);
+  var maxCount=top[0].count;
+  var medals=["\u{1F947}","\u{1F948}","\u{1F949}"];
+  
+  var h='<div class="bc-card" style="padding:14px"><div class="bc-card-hdr" style="border:none;padding:0 0 10px">TOP PUB</div>';
+  h+='<div class="bc-top-pubs">';
+  top.forEach(function(p,i){
+    var pct=maxCount>0?Math.round(p.count/maxCount*100):0;
+    var medal=i<3?medals[i]:(i+1)+".";
+    h+='<div class="bc-tp-row"><div class="bc-tp-header"><span class="bc-tp-name">'+medal+' '+p.name+'</span><span class="bc-tp-count">'+p.count+'</span></div><div class="bc-tp-track"><div class="bc-tp-bar" style="width:'+pct+'%'+(i>0?';opacity:'+Math.max(0.5,1-i*0.15):'')+'"></div></div></div>';
+  });
+  h+='</div></div>';
+  return h;
+}
+
+
+function renderBeerStats(stats){
+  if(!stats.total)return '';
+  // Find top day
+  var beers=loadBeers();
+  var topDay="",topDayCount=0;
+  LIVE_DAYS.forEach(function(d){
+    var count=0;
+    allItems(d).forEach(function(s){
+      if(s.tp==="Pub/Birra"&&beers[s.n])count+=beers[s.n];
+    });
+    if(count>topDayCount){topDayCount=count;topDay=d.pl}
+  });
+  var avgPerPub=stats.pubCount>0?(stats.total/stats.pubCount).toFixed(1):"0";
+  
+  var rows=[
+    ["Pinte totali",stats.total,"var(--pub)"],
+    ["Pub visitati",stats.pubCount+" / "+stats.totalPubs,""],
+    ["Media per pub",avgPerPub,""],
+    ["Media al giorno",stats.avg,""],
+    ["Pub preferito",stats.topPub+" ("+stats.topCount+")",""],
+    ["Giorno top",topDay+" ("+topDayCount+")",""],
+    ["Achievement",stats.unlockedAchs+" / 12",""]
+  ];
+  
+  var h='<div class="bc-card"><div class="bc-card-hdr">STATISTICHE</div>';
+  rows.forEach(function(r,i){
+    h+='<div class="bc-st-row'+(i<rows.length-1?' bc-st-brd':'')+'"><span class="bc-st-label">'+r[0]+'</span><span class="bc-st-val"'+(r[2]?' style="color:'+r[2]+'"':'')+'>'+r[1]+'</span></div>';
+  });
+  h+='</div>';
+  return h;
 }
 
 function getAllPubs(){
@@ -913,23 +1005,12 @@ function renderBeerCounter(){
     h+='<div class="bp-info"><div class="bp-name">'+p.name+'</div>';
     if(p.addr)h+='<div class="bp-addr">'+p.addr+'</div>';
     h+='</div>';
-    h+='<div class="bp-ctr"><button class="bp-btn" onclick="event.stopPropagation();removeBeer(\u0027'+p.name.replace(/'/g,"\u2019")+'\u0027)">-</button><span class="bp-cnt">'+cnt+'</span><button class="bp-btn" onclick="event.stopPropagation();addBeer(\u0027'+p.name.replace(/'/g,"\u2019")+'\u0027)">+</button></div>';
+    h+='<div class="bp-ctr"><button class="bp-btn" onclick="event.stopPropagation();removeBeer(this.dataset.pub)" data-pub="'+p.name.replace(/"/g,'&quot;')+'">-</button><span class="bp-cnt">'+cnt+'</span><button class="bp-btn" onclick="event.stopPropagation();addBeer(this.dataset.pub)" data-pub="'+p.name.replace(/"/g,'&quot;')+'">+</button></div>';
     h+='</div>';
   });
   h+='</div>';
   
-  // Fun stats
-  var stats=getBeerStats();
-  if(stats.total>0){
-    h+='<div class="bc-card"><div class="bc-card-hdr">STATISTICHE</div><div class="bc-fun-stats">';
-    h+='<div class="bc-fs-row"><span class="bc-fs-label">Pinte totali</span><span class="bc-fs-val">'+stats.total+'</span></div>';
-    h+='<div class="bc-fs-row"><span class="bc-fs-label">Pub visitati</span><span class="bc-fs-val">'+stats.pubCount+'/'+stats.totalPubs+'</span></div>';
-    h+='<div class="bc-fs-row"><span class="bc-fs-label">Media per pub</span><span class="bc-fs-val">'+(stats.pubCount>0?(stats.total/stats.pubCount).toFixed(1):"0")+'</span></div>';
-    h+='<div class="bc-fs-row"><span class="bc-fs-label">Media al giorno</span><span class="bc-fs-val">'+stats.avg+'</span></div>';
-    if(stats.topPub)h+='<div class="bc-fs-row"><span class="bc-fs-label">Pub preferito</span><span class="bc-fs-val">'+stats.topPub+' ('+stats.topCount+')</span></div>';
-    h+='<div class="bc-fs-row"><span class="bc-fs-label">Achievement sbloccati</span><span class="bc-fs-val">'+stats.unlockedAchs+'/12</span></div>';
-    h+='</div></div>';
-  }
+  
   
   return h;
 }
