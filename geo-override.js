@@ -21,18 +21,17 @@ if (navigator.geolocation) {
 document.addEventListener("click", function(e){
   const link = e.target.closest('a[href*="citymapper.com/directions"]');
   if (!link) return;
-
-  if (!window.USER_POS) return; // fallback hotel
-
+  //if (!window.USER_POS) return; // fallback hotel
   e.preventDefault();
-
   const url = new URL(link.href);
+  //url.searchParams.set("startcoord", window.USER_POS.lat + "," + window.USER_POS.lng);
 
-  url.searchParams.set(
-    "startcoord",
-    window.USER_POS.lat + "," + window.USER_POS.lng
-  );
-
+  // === TEST MODE: Trafalgar Square ===
+  const TEST_START = "51.5080,-0.1281";
+  url.searchParams.set("startcoord", TEST_START);
+  url.searchParams.set("startname", "Trafalgar Square");
+  // === TEST MODE: Trafalgar Square ===
+  
   window.open(url.toString(), "_blank");
 });
 
