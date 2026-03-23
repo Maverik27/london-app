@@ -692,6 +692,7 @@ function deleteDiaryEntry(dayIdx, stopIdx, entryIdx){
     diary[key].splice(entryIdx,1);
     if(diary[key].length===0)delete diary[key];
     saveDiary(diary);
+    renderDay(cD);
     showDiary(dayIdx,stopIdx);
     showToast("\u{1F5D1} Ricordo eliminato");
   }
@@ -988,6 +989,51 @@ function convertCurrency(){
   }
 }
 
+
+/* --- Menu & Guide --- */
+function toggleMenu(){
+  var m=document.getElementById("app-menu");
+  if(m)m.classList.toggle("open");
+}
+function closeMenu(){
+  var m=document.getElementById("app-menu");
+  if(m)m.classList.remove("open");
+}
+function showGuide(){
+  closeMenu();
+  var overlay=document.getElementById("edit-overlay");
+  var content=document.getElementById("edit-content");
+  var h='<div class="ed-hdr" style="background:#6b7280"><div class="ed-title">Guida funzionalit\u00e0</div><button class="ph-close" onclick="closeEdit()">\u2715</button></div>';
+  h+='<div class="ed-form">';
+  
+  var sections=[
+    {t:"\u{1F4C5} Timeline",d:"Scorri i giorni con le pillole in alto. Ogni giorno ha zone colorate con le tappe. Swipe laterale per cambiare giorno."},
+    {t:"\u{1F4CD} Mappa",d:"La mappa mostra le tappe del giorno. Premi 'Tu sei qui' per la tua posizione GPS (funziona solo da sito HTTPS)."},
+    {t:"\u270f\ufe0f Modifica tappa",d:"L'icona matita accanto al nome di ogni tappa apre il form di modifica. Puoi cambiare orario, descrizione, tipo e posizione."},
+    {t:"\u2795 Aggiungi tappa",d:"Il + tra due tappe o in fondo al giorno apre la ricerca. Cerca un luogo, selezionalo e viene aggiunto con coordinate e tipo automatici."},
+    {t:"\u23ed\ufe0f Salta tappa",d:"L'icona grigia a destra di ogni tappa la nasconde temporaneamente (diventa trasparente). Puoi ripristinarla in qualsiasi momento."},
+    {t:"\u{1F5D1} Elimina tappa",d:"L'icona rossa cestino a destra elimina la tappa definitivamente dall'itinerario. Chiede conferma prima di eliminare."},
+    {t:"\u{1F4F7} Diario",d:"L'icona turchese fotocamera su ogni tappa apre il diario. Puoi scattare foto, caricare dalla galleria e aggiungere note. Le foto vengono compresse automaticamente. \u{1F4F7} appare accanto al nome se ci sono foto."},
+    {t:"\u{1F4AC} Frasi utili",d:"L'icona viola su ogni tappa mostra frasi in inglese utili per quel contesto. Puoi ascoltare la pronuncia, copiare il testo o tradurre liberamente dall'italiano."},
+    {t:"\u{1F9ED} Navigazione",d:"L'icona Citymapper apre le indicazioni partendo dalla tua posizione GPS attuale. L'icona Google Maps mostra la destinazione su Maps."},
+    {t:"\u{1F50D} Cerca",d:"La tab Cerca trova tappe nell'itinerario. Se non trovi nulla, cerca su OpenStreetMap e aggiungi nuovi luoghi."},
+    {t:"\u{1F687} Trasporti",d:"Stato in tempo reale di tutte le linee TfL. Si aggiorna automaticamente all'apertura. Premi 'Aggiorna' per i dati pi\u00f9 recenti."},
+    {t:"\u2600\ufe0f Meteo",d:"Previsioni con temperatura, pioggia e vento. Si aggiorna automaticamente. Alba e tramonto visibili nella card giornata."},
+    {t:"\u{1F37A} Pint Counter",d:"Beer passport con tutti i pub dell'itinerario. Conta le pinte con +/-, sblocca achievement e vedi le statistiche. I pub nuovi aggiunti all'itinerario appaiono automaticamente."},
+    {t:"\u{1F4B1} Convertitore",d:"Nella tab Info, converti EUR/GBP con il tasso aggiornato in tempo reale."},
+    {t:"\u{1F512} PIN",d:"L'app \u00e8 protetta da PIN a 6 cifre. Modificabile in config.js."},
+    {t:"\u{1F504} Ripristina",d:"Nel menu (\u2699), 'Ripristina itinerario' riporta tutto alla versione originale."}
+  ];
+  
+  sections.forEach(function(s){
+    h+='<div style="margin-bottom:14px"><div style="font-size:14px;font-weight:600;margin-bottom:3px">'+s.t+'</div><div style="font-size:13px;color:var(--tx2);line-height:1.6">'+s.d+'</div></div>';
+  });
+  
+  h+='</div>';
+  content.innerHTML=h;
+  overlay.classList.add("open");
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
@@ -1248,7 +1294,7 @@ function renderIf(){
   h+='<div class="ic"><h3>\u{1F4DE} Numeri utili</h3><ul><li>\u{1F198} <b>999 / 112</b><div class="li-desc">Emergenze (polizia, ambulanza, vigili)</div></li><li>\u{1F3E5} <b>111</b><div class="li-desc">NHS, consulenza medica non urgente</div></li><li>\u{1F1EE}\u{1F1F9} <b>+44 20 7312 2200</b><div class="li-desc">Ambasciata italiana a Londra</div></li><li>\u{1F687} <b>0343 222 1234</b><div class="li-desc">TfL, info trasporti</div></li><li>\u{1F3E8} <b>+44 20 7456 0400</b><div class="li-desc">Hotel Point A Liverpool Street</div></li></ul></div>';
   h+='<div class="ic"><h3>\u{1F4A1} Consigli</h3><ul><li>\u{1F697} <b>Si guida a sinistra!</b><div class="li-desc">Guardate prima a destra quando attraversate</div></li><li>\u{1F4B0} <b>Mancia 10%</b><div class="li-desc">Apprezzata, non obbligatoria</div></li><li>\u{1F50C} <b>Prese UK tipo G</b><div class="li-desc">3 pin rettangolari, serve adattatore</div></li><li>\u{1F4A7} <b>Acqua rubinetto OK</b><div class="li-desc">Potabile, riempite le borracce</div></li><li>\u{1F37A} <b>Orari pub</b><div class="li-desc">~23 settimana, ~00 weekend</div></li><li>\u{1F4B3} <b>Contactless ovunque</b><div class="li-desc">Anche per importi piccoli</div></li><li>\u{1F45C} <b>Sicurezza metro</b><div class="li-desc">Occhio a borse nelle ore di punta</div></li></ul></div>';
   h+='<div class="foot">London App - Mar 2026 \u{1F408}\u200d\u2b1b</div>';
-  h+='<div style="text-align:center;padding:0 20px 10px"><button class="wlb" onclick="confirmReset()">Ripristina itinerario originale</button></div>';
+  
   document.getElementById("ifw").innerHTML=h;
 }
 

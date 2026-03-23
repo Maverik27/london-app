@@ -30,10 +30,13 @@
   <div>
     <h1><img class="top-ico" id="hdr-ico" src="favicon.png" alt=""><span id="hdr-name">London App</span></h1>
   </div>
-  <div class="tgl-wrap">
-    <span class="tgl-ic">🌙</span>
-    <button class="tgl" onclick="document.documentElement.classList.toggle('light');localStorage.setItem('th',document.documentElement.classList.contains('light')?'l':'d')"></button>
-    <span class="tgl-ic">☀️</span>
+  <div style="display:flex;align-items:center;gap:4px">
+    <button class="menu-btn" onclick="toggleMenu()">&#x2699;&#xFE0F;</button>
+    <div class="tgl-wrap">
+      <span class="tgl-ic">&#x1F319;</span>
+      <button class="tgl" onclick="document.documentElement.classList.toggle('light');localStorage.setItem('th',document.documentElement.classList.contains('light')?'l':'d')"></button>
+      <span class="tgl-ic">&#x2600;&#xFE0F;</span>
+    </div>
   </div>
 </div>
 
@@ -41,7 +44,7 @@
 <div class="pg on" id="p1">
   <div class="pills" id="pls"></div>
   <div class="prog"><div class="prog-bar" id="pbar" style="width:0%"></div></div>
-  <div class="gps-wrap"><div id="gmap"></div><button class="gps-btn" onclick="doLocate()">📍 Tu sei qui</button></div>
+  <div class="gps-wrap"><div id="gmap"></div><button class="gps-btn" onclick="doLocate()">&#x1F4CD; Tu sei qui</button></div>
   <div id="dc"></div>
 </div>
 
@@ -49,7 +52,7 @@
 <div class="pg" id="p2">
   <div class="srw">
     <div class="srbox">
-      <span class="sri">🔍</span>
+      <span class="sri">&#x1F50D;</span>
       <input class="srin" type="text" id="si" placeholder="Cerca luogo, pub, metro...">
     </div>
     <div class="scps" id="scp"></div>
@@ -73,12 +76,12 @@
 
 <!-- Bottom Nav -->
 <nav class="nav">
-<button class="on" data-p="p1"><span class="ni">📅</span>Piano</button>
-<button data-p="p2"><span class="ni">🔍</span>Cerca</button>
-<button data-p="p3"><span class="ni">🚇</span>Trasporti</button>
-<button data-p="p4"><span class="ni">☀️</span>Meteo</button>
+<button class="on" data-p="p1"><span class="ni">&#x1F4C5;</span>Piano</button>
+<button data-p="p2"><span class="ni">&#x1F50D;</span>Cerca</button>
+<button data-p="p3"><span class="ni">&#x1F687;</span>Trasporti</button>
+<button data-p="p4"><span class="ni">&#x2600;&#xFE0F;</span>Meteo</button>
 <button data-p="p6"><span class="ni"><img src="pint-icon.png" style="width:18px;height:18px;border-radius:4px"></span>Pint</button>
-<button data-p="p5"><span class="ni">ℹ️</span>Info</button>
+<button data-p="p5"><span class="ni">&#x2139;&#xFE0F;</span>Info</button>
 </nav>
 
 <!-- Phrase Overlay -->
@@ -89,6 +92,16 @@
 <!-- Edit Overlay -->
 <div class="ed-overlay" id="edit-overlay" onclick="if(event.target===this)closeEdit()">
   <div class="ed-panel"><div id="edit-content"></div></div>
+</div>
+
+<!-- Menu Overlay -->
+<div class="app-menu" id="app-menu" onclick="if(event.target===this)closeMenu()">
+  <div class="menu-panel">
+    <div class="menu-item" onclick="showGuide()"><span>&#x1F4D6;</span> Guida</div>
+    <div class="menu-item" onclick="closeMenu();confirmReset()"><span>&#x1F504;</span> Ripristina itinerario</div>
+    <div class="menu-item" onclick="closeMenu();exportDiary()"><span>&#x1F4BE;</span> Esporta diario</div>
+    <div class="menu-item" onclick="closeMenu()"><span>&#x2715;</span> Chiudi</div>
+  </div>
 </div>
 
 <!-- Scripts -->
