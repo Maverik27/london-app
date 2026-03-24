@@ -370,9 +370,7 @@ function renderNomResults(results,q){
     var safeAddr=addr.replace(/'/g,"\u2019");
     var la=parseFloat(r.lat);
     var ln=parseFloat(r.lon);
-    //h+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
-    //h+='<div class="sr-item" data-idx="'+i+'">';
-    h+='<div class="sr-item" data-name="'+name.replace(/"/g,'&quot;')+'" data-addr="'+addr.replace(/"/g,'&quot;')+'" data-lat="'+la+'" data-lng="'+ln+'" data-type="'+tp+'">';
+    h+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
     h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
     h+='<div class="sr-item-info"><div class="sr-item-name">'+name+'</div><div class="sr-item-meta">'+tp+' \u2022 '+addr+'</div></div>';
     h+='<div class="sr-add-badge">+ Aggiungi</div>';
@@ -388,36 +386,6 @@ function renderNomResults(results,q){
   h+='</div>';
   
   c.innerHTML=h;
-}
-
-function showAddFlowFromData(name, addr, la, ln, tp){
-
-  console.log("APERTURA POPUP");
-  
-  var overlay=document.getElementById("edit-overlay");
-  var content=document.getElementById("edit-content");
-
-  if(!overlay || !content){
-    console.error("Overlay non trovato");
-    return;
-  }
-
-  var h='<div class="ed-hdr"><div class="ed-title">Aggiungi tappa</div><button class="ph-close" onclick="closeEdit()">✕</button></div>';
-  h+='<div class="ed-form">';
-  h+='<div style="padding:12px;background:var(--bg3);border-radius:10px;margin-bottom:14px">';
-  h+='<div style="font-size:15px;font-weight:600">'+name+'</div>';
-  h+='<div style="font-size:12px;color:var(--tx2);margin-top:4px">'+addr+'</div>';
-  h+='</div>';
-
-  h+='<label class="ed-label">In quale giorno?</label><div class="day-pick">';
-  LIVE_DAYS.forEach(function(d,i){
-    h+='<button class="day-pick-btn" onclick="addPlaceToDay('+i+',\''+name.replace(/'/g,"\\'")+'\',\''+tp+'\',\''+addr.replace(/'/g,"\\'")+'\','+la+','+ln+')">';
-    h+=d.pl+'</button>';
-  });
-  h+='</div></div>';
-
-  content.innerHTML=h;
-  overlay.classList.add("open");
 }
 
 function showAddFlow(resultIdx,q){
@@ -1991,23 +1959,3 @@ function renderIf(){
 }
 
 init();
-
-// === CLICK SU RISULTATI RICERCA ===
-document.addEventListener("click", function(e){
-
-  console.log("CLICK OK", name, addr, la, ln, tp);
-  showAddFlowFromData(name, addr, la, ln, tp);
-  
-  var el = e.target.closest(".sr-item");
-  if(!el) return;
-
-  var name = el.getAttribute('data-name');
-  var addr = el.getAttribute('data-addr');
-  var la   = parseFloat(el.getAttribute('data-lat'));
-  var ln   = parseFloat(el.getAttribute('data-lng'));
-  var tp   = el.getAttribute('data-type');
-
-  if(!name || isNaN(la) || isNaN(ln)) return;
-
-  showAddFlowFromData(name, addr, la, ln, tp);
-});
