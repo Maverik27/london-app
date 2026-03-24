@@ -371,7 +371,13 @@ function renderNomResults(results,q){
     var la=parseFloat(r.lat);
     var ln=parseFloat(r.lon);
     //h+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
-    h+='<div class="sr-item" data-idx="'+i+'">';
+    //h+='<div class="sr-item" data-idx="'+i+'">';
+    h+='<div class="sr-item" 
+      data-name="'+name.replace(/"/g,'&quot;')+'" 
+      data-addr="'+addr.replace(/"/g,'&quot;')+'" 
+      data-lat="'+la+'" 
+      data-lng="'+ln+'" 
+      data-type="'+tp+'">';
     h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
     h+='<div class="sr-item-info"><div class="sr-item-name">'+name+'</div><div class="sr-item-meta">'+tp+' \u2022 '+addr+'</div></div>';
     h+='<div class="sr-add-badge">+ Aggiungi</div>';
@@ -390,18 +396,17 @@ function renderNomResults(results,q){
 
   document.querySelectorAll('.sr-item').forEach(function(el){
     el.addEventListener('click', function(){
-      var idx = parseInt(this.getAttribute('data-idx'));
-      var results = NOM_CACHE[q];
-      var r = results[idx];
-      if(!r) return;
   
-      showAddFlowFromData(
-        r.display_name.split(',')[0],
-        r.display_name,
-        parseFloat(r.lat),
-        parseFloat(r.lon),
-        r.type || "place"
-      );
+      var name = this.getAttribute('data-name');
+      var addr = this.getAttribute('data-addr');
+      var la   = parseFloat(this.getAttribute('data-lat'));
+      var ln   = parseFloat(this.getAttribute('data-lng'));
+      var tp   = this.getAttribute('data-type');
+  
+      //if(!name || !la || !ln) return;
+      if(!name || isNaN(la) || isNaN(ln)) return;
+      
+      showAddFlowFromData(name, addr, la, ln, tp);
     });
   });
 }
@@ -409,6 +414,11 @@ function renderNomResults(results,q){
 function showAddFlowFromData(name, addr, la, ln, tp){
   var overlay=document.getElementById("edit-overlay");
   var content=document.getElementById("edit-content");
+
+  if(!overlay || !content){
+    console.error("Overlay non trovato");
+    return;
+  }
 
   var h='<div class="ed-hdr"><div class="ed-title">Aggiungi tappa</div><button class="ph-close" onclick="closeEdit()">✕</button></div>';
   h+='<div class="ed-form">';
