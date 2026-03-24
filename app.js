@@ -388,22 +388,6 @@ function renderNomResults(results,q){
   h+='</div>';
   
   c.innerHTML=h;
-
-  document.querySelectorAll('.sr-item').forEach(function(el){
-    el.addEventListener('click', function(){
-  
-      var name = this.getAttribute('data-name');
-      var addr = this.getAttribute('data-addr');
-      var la   = parseFloat(this.getAttribute('data-lat'));
-      var ln   = parseFloat(this.getAttribute('data-lng'));
-      var tp   = this.getAttribute('data-type');
-  
-      //if(!name || !la || !ln) return;
-      if(!name || isNaN(la) || isNaN(ln)) return;
-      
-      showAddFlowFromData(name, addr, la, ln, tp);
-    });
-  });
 }
 
 function showAddFlowFromData(name, addr, la, ln, tp){
@@ -2004,3 +1988,20 @@ function renderIf(){
 }
 
 init();
+
+// === CLICK SU RISULTATI RICERCA ===
+document.addEventListener("click", function(e){
+  console.log("CLICK OK");
+  var el = e.target.closest(".sr-item");
+  if(!el) return;
+
+  var name = el.getAttribute('data-name');
+  var addr = el.getAttribute('data-addr');
+  var la   = parseFloat(el.getAttribute('data-lat'));
+  var ln   = parseFloat(el.getAttribute('data-lng'));
+  var tp   = el.getAttribute('data-type');
+
+  if(!name || isNaN(la) || isNaN(ln)) return;
+
+  showAddFlowFromData(name, addr, la, ln, tp);
+});
