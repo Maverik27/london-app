@@ -28,11 +28,11 @@ a{color:var(--acc);text-decoration:none}
 html.light .tgl::after{left:21px}
 
 /* === BOTTOM NAV === */
-.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--brd);display:flex;z-index:200;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
-.nav button{flex:1;background:none;border:none;color:var(--tx3);font-size:10px;font-family:var(--f);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:500;padding:2px 0}
-.nav button.on{color:var(--acc)}
-.ni{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
-.nav button.on .ni{background:var(--accs)}
+.nav{display:flex;background:var(--card);border-top:1px solid var(--brd);padding:6px 4px 8px;position:fixed;bottom:0;left:0;right:0;z-index:100;gap:0}
+.nav button{flex:1;display:flex;align-items:center;justify-content:center;background:none;border:none;padding:4px;cursor:pointer;border-radius:10px}
+.nav button.on{background:var(--bg3)}
+.ni{display:flex;align-items:center;justify-content:center}
+.nav button.on .ni{display:flex;align-items:center;justify-content:center}
 
 /* === PAGES === */
 .pg{display:none;padding-bottom:76px}.pg.on{display:block}
@@ -423,3 +423,13 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .bc-st-brd{border-bottom:1px solid var(--brd)}
 .bc-st-label{color:var(--tx2)}
 .bc-st-val{font-weight:600}
+
+.nav button:not(.on) .ni{opacity:.4}
+.nav button.on .ni{opacity:1}
+
+/* Piano integrated search */
+.piano-search{padding:0 20px;position:relative;z-index:40}
+.piano-search-box{position:relative}
+.piano-si{width:100%;padding:10px 14px 10px 34px;border:1px solid var(--brd);border-radius:10px;font-size:14px;background:var(--card);color:var(--tx);font-family:var(--f);outline:none}
+.piano-si:focus{border-color:var(--acc)}
+.piano-sr{display:none;position:absolute;left:20px;right:20px;z-index:45;max-height:60vh;overflow-y:auto;border-radius:0 0 12px 12px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
