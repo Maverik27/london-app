@@ -372,12 +372,7 @@ function renderNomResults(results,q){
     var ln=parseFloat(r.lon);
     //h+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
     //h+='<div class="sr-item" data-idx="'+i+'">';
-    h+='<div class="sr-item" 
-      data-name="'+name.replace(/"/g,'&quot;')+'" 
-      data-addr="'+addr.replace(/"/g,'&quot;')+'" 
-      data-lat="'+la+'" 
-      data-lng="'+ln+'" 
-      data-type="'+tp+'">';
+    h+='<div class="sr-item" data-name="'+name.replace(/"/g,'&quot;')+'" data-addr="'+addr.replace(/"/g,'&quot;')+'" data-lat="'+la+'" data-lng="'+ln+'" data-type="'+tp+'">';
     h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
     h+='<div class="sr-item-info"><div class="sr-item-name">'+name+'</div><div class="sr-item-meta">'+tp+' \u2022 '+addr+'</div></div>';
     h+='<div class="sr-add-badge">+ Aggiungi</div>';
