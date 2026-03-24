@@ -429,20 +429,24 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
 /* Piano integrated search */
 /*.piano-search{padding:8px 8px 8px;position:sticky;top:100px;z-index:50;}*/
-.piano-search-box{position:relative}
+/*.piano-search-box{position:relative}*/
 /*.piano-si{width:100%;padding:10px 14px 10px 34px;border:1px solid var(--brd);border-radius:10px;font-size:14px;background:var(--card);color:var(--tx);font-family:var(--f);outline:none}*/
 /*.piano-si:focus{border-color:var(--acc)}*/
 /*.piano-sr{display:none;position:fixed;left:0;right:0;top:170px;z-index:200;max-height:55vh;overflow-y:auto;padding:0 20px;background:transparent}*/
-
 /* Blocca la barra in alto e le dà un colore di sfondo per nascondere i giorni che scorrono */
-.piano-search {position: sticky;top: 50px;z-index: 100;background-color: var(--bg);padding: 10px 0;}
-
+/*.piano-search {position: sticky;top: 50px;z-index: 100;background-color: var(--bg);padding: 10px 0;}*/
 /* Disegna la lente d'ingrandimento direttamente nell'input, così non rompiamo l'HTML! */
-.piano-si {width: 100%;background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='7' cy='7' r='5' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M11 11l3.5 3.5' stroke='%23555' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat: no-repeat;background-position: 10px center;padding-left: 36px !important;}
-
+/*.piano-si {width: 100%;background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='7' cy='7' r='5' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M11 11l3.5 3.5' stroke='%23555' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat: no-repeat;background-position: 10px center;padding-left: 36px !important;}*/
 /* Tendina dei risultati a comparsa: parte esattamente da sotto l'input */
-.piano-sr {position: absolute;top: calc(100% + 5px);left: 0;width: 100%;max-height: 40vh;overflow-y: auto;background-color: var(--bg2);border: 1px solid var(--brd);border-radius: var(--r);z-index: 101;box-shadow: 0 4px 12px rgba(0,0,0,0.5);}
+/*.piano-sr {position: absolute;top: calc(100% + 5px);left: 0;width: 100%;max-height: 40vh;overflow-y: auto;background-color: var(--bg2);border: 1px solid var(--brd);border-radius: var(--r);z-index: 101;box-shadow: 0 4px 12px rgba(0,0,0,0.5);}*/
 
+/* --- FIX BARRA DI RICERCA: Scroll e Sovrapposizioni --- */
 
+/* Blocca la barra sotto i giorni, copre ciò che scorre sotto */
+.piano-search {position: sticky !important;top: 50px !important;z-index: 100 !important;background-color: var(--bg) !important;padding: 10px 0 !important;}
+/* Assicura che la tendina parta dal contenitore corretto */
+.piano-search-box {position: relative !important;width: 100% !important;}
+/* Posiziona i risultati ESATTAMENTE sotto la barra, senza coprire il testo digitato */
+.piano-sr {position: absolute !important;top: calc(100% + 5px) !important;left: 0 !important;right: 0 !important;max-height: 50vh !important;overflow-y: auto !important;background-color: var(--card, #131313) !important;border: 1px solid var(--brd, #333) !important;border-radius: var(--r, 10px) !important;z-index: 101 !important;box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;}
 
 .gps-wrap{position:relative;z-index:1}
