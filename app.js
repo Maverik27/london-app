@@ -1321,22 +1321,28 @@ function filterCat(cat){
 
 
 function fuzzyMatch(query,text){
-  query=query.toLowerCase();text=text.toLowerCase();
-  if(text.indexOf(query)>=0)return true;
-  // Simple fuzzy: allow 1 missing/wrong char for queries >= 3 chars
-  if(query.length<3)return false;
-  var matches=0;
-  var ti=0;
-  for(var qi=0;qi<query.length&&ti<text.length;qi++){
-    if(query[qi]===text[ti]){matches++;ti++}
-    else{
-      // Try skipping one char in text
-      if(ti+1<text.length&&query[qi]===text[ti+1]){matches++;ti+=2}
-      // Try skipping one char in query
-      else{ti++; qi--}
+  var q=query.toLowerCase(),t=text.toLowerCase();
+  if(t.indexOf(q)>=0)return true;
+  // Check each word in text
+  var words=t.split(/\s+/);
+  for(var w=0;w<words.length;w++){
+    if(words[w].indexOf(q)>=0)return true;
+    if(q.length>=3&&levenshtein(q,words[w].substring(0,q.length+1))<=Math.floor(q.length/3))return true;
+  }
+  // Also check if query is close to full text start
+  if(q.length>=3&&levenshtein(q,t.substring(0,q.length+1))<=Math.floor(q.length/3))return true;
+  return false;
+}
+function levenshtein(a,b){
+  var m=a.length,n=b.length,d=[];
+  for(var i=0;i<=m;i++){d[i]=[i]}
+  for(var j=0;j<=n;j++){d[0][j]=j}
+  for(var i=1;i<=m;i++){
+    for(var j=1;j<=n;j++){
+      d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
     }
   }
-  return matches>=query.length-1;
+  return d[m][n];
 }
 
 function pianoSearch(){

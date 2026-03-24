@@ -428,7 +428,7 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .nav button.on .ni{opacity:1}
 
 /* Piano integrated search */
-.piano-search{padding:0 20px;position:sticky;top:93px;z-index:50;background:var(--bg)}
+.piano-search{padding:8px 20px 4px;position:sticky;top:89px;z-index:50;background:var(--bg)}
 .piano-search-box{position:relative}
 .piano-si{width:100%;padding:10px 14px 10px 34px;border:1px solid var(--brd);border-radius:10px;font-size:14px;background:var(--card);color:var(--tx);font-family:var(--f);outline:none}
 .piano-si:focus{border-color:var(--acc)}
