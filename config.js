@@ -5,7 +5,7 @@
 
 var CONFIG = {
   // App
-  version: "1.1.1",
+  version: "1.0.7",
   appName: "London App",
   footer: "London App - Mar 2026 \ud83d\udc08\u200d\u2b1b",
 
