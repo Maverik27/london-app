@@ -371,14 +371,7 @@ function renderNomResults(results,q){
     var la=parseFloat(r.lat);
     var ln=parseFloat(r.lon);
     //h+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')">';
-    h+='<div class="sr-item" onclick="showAddFlowFromData(
-    \''+name.replace(/'/g,"\\'")+'\',
-    \''+addr.replace(/'/g,"\\'")+'\',
-    '+la+',
-    '+ln+',
-    \''+tp+'\'
-  )">';
-    
+    h+='<div class="sr-item" data-idx="'+i+'">';
     h+='<div class="sr-item-ico" style="background:var(--'+cl+'s,var(--bg3))">'+ti+'</div>';
     h+='<div class="sr-item-info"><div class="sr-item-name">'+name+'</div><div class="sr-item-meta">'+tp+' \u2022 '+addr+'</div></div>';
     h+='<div class="sr-add-badge">+ Aggiungi</div>';
@@ -394,6 +387,23 @@ function renderNomResults(results,q){
   h+='</div>';
   
   c.innerHTML=h;
+
+  document.querySelectorAll('.sr-item').forEach(function(el){
+    el.addEventListener('click', function(){
+      var idx = parseInt(this.getAttribute('data-idx'));
+      var results = NOM_CACHE[q];
+      var r = results[idx];
+      if(!r) return;
+  
+      showAddFlowFromData(
+        r.display_name.split(',')[0],
+        r.display_name,
+        parseFloat(r.lat),
+        parseFloat(r.lon),
+        r.type || "place"
+      );
+    });
+  });
 }
 
 function showAddFlowFromData(name, addr, la, ln, tp){
