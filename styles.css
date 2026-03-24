@@ -428,11 +428,11 @@ html.light .shell::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .nav button.on .ni{opacity:1}
 
 /* Piano integrated search */
-.piano-search{padding:8px 20px 8px;position:sticky;top:110px;z-index:50;}
+.piano-search{padding:8px 8px 8px;position:sticky;top:100px;z-index:50;}
 .piano-search-box{position:relative}
 .piano-si{width:100%;padding:10px 14px 10px 34px;border:1px solid var(--brd);border-radius:10px;font-size:14px;background:var(--card);color:var(--tx);font-family:var(--f);outline:none}
 .piano-si:focus{border-color:var(--acc)}
-.piano-sr{display:none;position:fixed;left:0;right:-15;top:170px;z-index:200;max-height:55vh;overflow-y:auto;padding:0 20px;background:transparent}
+.piano-sr{display:none;position:fixed;left:0;right:0;top:170px;z-index:200;max-height:55vh;overflow-y:auto;padding:0 20px;background:transparent}
 
 .gps-wrap{position:relative;z-index:1}
 
