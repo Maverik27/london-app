@@ -1319,6 +1319,87 @@ function filterCat(cat){
 
 
 
+
+function fuzzyMatch(query,text){
+  query=query.toLowerCase();text=text.toLowerCase();
+  if(text.indexOf(query)>=0)return true;
+  // Simple fuzzy: allow 1 missing/wrong char for queries >= 3 chars
+  if(query.length<3)return false;
+  var matches=0;
+  var ti=0;
+  for(var qi=0;qi<query.length&&ti<text.length;qi++){
+    if(query[qi]===text[ti]){matches++;ti++}
+    else{
+      // Try skipping one char in text
+      if(ti+1<text.length&&query[qi]===text[ti+1]){matches++;ti+=2}
+      // Try skipping one char in query
+      else{ti++; qi--}
+    }
+  }
+  return matches>=query.length-1;
+}
+
+function pianoSearch(){
+  var q=document.getElementById("piano-si").value.trim();
+  var r=document.getElementById("piano-sr");
+  if(!q||q.length<2){r.innerHTML="";r.style.display="none";return}
+  r.style.display="block";
+  var ql=q.toLowerCase();
+  
+  // Local fuzzy search
+  var found=[];
+  LIVE_DAYS.forEach(function(d,di){
+    allItems(d).forEach(function(s,si){
+      if(fuzzyMatch(ql,s.n)||fuzzyMatch(ql,s.ds)||(s.ad&&fuzzyMatch(ql,s.ad))){
+        found.push({stop:s,dayIdx:di,day:d.pl});
+      }
+    });
+  });
+  
+  var h='';
+  if(found.length>0){
+    h+='<div class="sr-section"><div class="sr-section-hdr">NELL\'ITINERARIO</div>';
+    found.forEach(function(f){
+      var ti=TI[f.stop.tp]||"\u{1F3DB}";
+      var tn=TN[f.stop.tp]||f.stop.tp;
+      h+='<div class="sr-item" onclick="document.getElementById(\'piano-si\').value=\'\';document.getElementById(\'piano-sr\').style.display=\'none\';goTo('+f.dayIdx+',\''+f.stop.t+'\')">';
+      h+='<div class="sr-item-ico" style="background:var(--bg3)">'+ti+'</div>';
+      h+='<div class="sr-item-info"><div class="sr-item-name">'+f.stop.n+'</div><div class="sr-item-meta">'+f.day+' \u2022 '+tn+'</div></div>';
+      h+='<svg class="sr-item-arr" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="var(--tx3)" stroke-width="1.5" stroke-linecap="round"/></svg>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  
+  // Nominatim (if 3+ chars)
+  if(q.length>=3){
+    h+='<div id="piano-nom" class="sr-section"><div class="sr-section-hdr">AGGIUNGI</div><div class="sr-empty-small">\u23f3 Cerco...</div></div>';
+  }
+  r.innerHTML=h;
+  
+  if(q.length>=3){
+    fetch(CONFIG.nominatimUrl+"?q="+encodeURIComponent(q+" London")+"&format=json&limit=4&accept-language=it")
+    .then(function(r){return r.json()})
+    .then(function(results){
+      var nomEl=document.getElementById("piano-nom");
+      if(!nomEl)return;
+      if(!results.length){nomEl.innerHTML='<div class="sr-section-hdr">AGGIUNGI</div><div class="sr-empty-small">Nessun risultato</div>';return}
+      var nh='<div class="sr-section-hdr">AGGIUNGI</div>';
+      var seen={};
+      results.forEach(function(r,i){
+        var name=r.display_name.split(",")[0];
+        var nl=name.toLowerCase();
+        if(seen[nl])return;seen[nl]=true;
+        var addr=r.display_name.split(",").slice(1,3).join(",").trim();
+        var tp=detectType(r);
+        var ti=TI[tp]||"\u{1F3DB}";
+        nh+='<div class="sr-item" onclick="showAddFlow('+i+',\''+q.replace(/'/g,"\\'")+'\')"><div class="sr-item-ico" style="background:var(--bg3)">'+ti+'</div><div class="sr-item-info"><div class="sr-item-name">'+name+'</div><div class="sr-item-meta">'+addr+'</div></div><div class="sr-add-badge">+ Aggiungi</div></div>';
+      });
+      nomEl.innerHTML=nh;
+    }).catch(function(){});
+  }
+}
+
 function doLocate(){
   var btn=document.querySelector(".gps-btn");
   if(!gpsMap){if(btn)btn.textContent="\u274c Mappa non pronta";return;}
