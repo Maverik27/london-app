@@ -1323,15 +1323,19 @@ function filterCat(cat){
 function fuzzyMatch(query,text){
   var q=query.toLowerCase(),t=text.toLowerCase();
   if(t.indexOf(q)>=0)return true;
-  // Check each word in text
-  var words=t.split(/\s+/);
-  for(var w=0;w<words.length;w++){
-    if(words[w].indexOf(q)>=0)return true;
-    if(q.length>=3&&levenshtein(q,words[w].substring(0,q.length+1))<=Math.floor(q.length/3))return true;
+  // Split query into words, each must fuzzy-match somewhere in text
+  var qw=q.split(/\s+/);
+  var tw=t.split(/\s+/);
+  var matched=0;
+  for(var i=0;i<qw.length;i++){
+    var found=false;
+    for(var j=0;j<tw.length;j++){
+      if(tw[j].indexOf(qw[i])>=0){found=true;break}
+      if(qw[i].length>=3&&levenshtein(qw[i],tw[j].substring(0,qw[i].length+2))<=Math.max(1,Math.floor(qw[i].length/3))){found=true;break}
+    }
+    if(found)matched++;
   }
-  // Also check if query is close to full text start
-  if(q.length>=3&&levenshtein(q,t.substring(0,q.length+1))<=Math.floor(q.length/3))return true;
-  return false;
+  return matched>=qw.length;
 }
 function levenshtein(a,b){
   var m=a.length,n=b.length,d=[];
