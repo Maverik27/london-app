@@ -391,6 +391,9 @@ function renderNomResults(results,q){
 }
 
 function showAddFlowFromData(name, addr, la, ln, tp){
+
+  console.log("APERTURA POPUP");
+  
   var overlay=document.getElementById("edit-overlay");
   var content=document.getElementById("edit-content");
 
@@ -1991,7 +1994,10 @@ init();
 
 // === CLICK SU RISULTATI RICERCA ===
 document.addEventListener("click", function(e){
-  console.log("CLICK OK");
+
+  console.log("CLICK OK", name, addr, la, ln, tp);
+  showAddFlowFromData(name, addr, la, ln, tp);
+  
   var el = e.target.closest(".sr-item");
   if(!el) return;
 
