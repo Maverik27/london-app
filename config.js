@@ -10,7 +10,7 @@ var CONFIG = {
   footer: "London App - Mar 2026 \ud83d\udc08\u200d\u2b1b",
 
   // Security
-  pin: "000000",
+  pin: "497456",
 
   // Travel dates
   startDate: "2026-03-26",
