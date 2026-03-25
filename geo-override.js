@@ -1,5 +1,5 @@
 // === CONFIG ===
-const DEBUG = true; // true = usa Trafalgar Square, false = usa GPS reale
+const DEBUG = false; // true = usa Trafalgar Square, false = usa GPS reale
 
 // === GEO ===
 window.USER_POS = null;
